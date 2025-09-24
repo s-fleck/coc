@@ -117,7 +117,7 @@ def markdown_to_paragraphs(md_text, style):
     
     # Convert HTML to ReportLab compatible format
     text = html
-    text = re.sub(r'<p>(.*?)</p>', r'\1<br/><br/>', text)  # Convert HTML paragraphs
+    text = re.sub(r'<p>(.*?)</p>', r'\1<br/>', text)  # Convert HTML paragraphs
     text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
     text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
     

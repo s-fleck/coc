@@ -1,15 +1,15 @@
 "Firearms":
   actions:
-    fire_weapon:
+    "Fire Weapon":
       icon: "img/firearms_fire_weapon.png"
       skill: "Firearms (Weapon)"
       description: |
         Single shot attack with drawn firearm. Use appropriate weapon skill (Handgun, Rifle, etc...). 
 
         **Extreme success** causes impaling strike (except flamethrowers).
-      cost: 1 Combat Action
+      cost: 1 combat action
 
-    quick_fire:
+    "Quick Fire":
       icon: "img/firearms_quick_fire.png"
       skill: "Firearms (Weapon)"
       description: >
@@ -20,56 +20,61 @@
       cost: 1 turn
       gain: "`+50` Initiative (`DEX`) for one round"
 
-    aim_weapon:
+    "Aim Weapon":
       icon: "img/firearms_aimed_fire.png"
       skill: "Firearms (Weapon)"
-      description: >
+      description: |
         Spend entire turn aiming. Next turn, gain bonus die if firing is your first action. 
+
         *Lost if you take damage or move before firing*.
       cost: 1 turn
       gain: "+1 bonus die next round"
 
-    point_blank_range:
+    "Point Blank Range":
       icon: "img/firearms_point_blank_range.png"
       skill: "Firearms (Weapon)"
-      description: >
+      description: |
         Target within `1/5` of `DEX` in feet. Gain bonus die to attack. Target cannot dodge or fight 
         back against firearm attacks.
 
         *Note that the shooter is vulnerable to melee attacks and disarming at point blank range.*
-      cost: 1 Combat Action
+      cost: 1 combat action
       gain: "+1 bonus die"
 
-    multiple_shot:
+    "Multiple Shot":
       icon: "img/firearms_multiple_shots.png"
       skill: "Firearms (Handguns)"
       description: >
         **Handguns/burst weapons only**. Fire up to weapon's max `Attacks` rating in single round. 
         Each shot takes penalty die.
-      cost: "1 Combat Action, +1 penalty die for each shot taken"
+      cost: "1 combat action, +1 penalty die for each shot taken"
 
-    fire_automatic:
+    "Fire Automatic":
       icon: "img/firearms_fire_automatic.png"
       skill: "Firearms (Machine Gun // SMG)"
       description: |
-        **Automatic weapons only**. Fire up to `skill/10` bullets (rounded down, min `3`) per volley. Multiple volleys are possible but increase difficulty.
+        **Automatic weapons only**. Fire up to `skill/10` bullets (rounded down, min `3`) per volley. 
+
+        *Multiple volleys are possible but increase difficulty.*
 
         - **Success**: half the bullets (rounded down) hit
         - **Extreme success**: all hit, half are impaling
       cost: |
-        - 1 Combat Action for single volley,
-        - 1 Turn for multiple volleys,
-        - +1 penalty die / difficulty increase for each successive volley in a single turn
+        • 1 combat action for single volley
+        • 1 Turn for multiple volleys
+        • +1 penalty die / difficulty increase for each successive volley in a single turn
 
-    reload_weapon:
+    "Reload Weapon":
       icon: "img/firearms_reload.png"
-      description: >
-        **Reload weapon**. *Manual loading*: 2 shells per action (revolvers, shotguns). 
-        *Magazine*: full reload per action. *Heavy weapons*: 2 full turns. You cannot reload while 
-        sprinting.
-      cost: 1 Combat Action
+      description: |
+        - **Manual loading**: 2 shells per action (revolvers, shotguns). 
+        - **Magazine**: full reload per action. 
+        - **Heavy weapons**: 2 full turns. 
 
-    single_bullet_reload:
+        *You cannot reload while sprinting.*
+      cost: 1 combat action
+
+    "Single Bullet Reload":
       icon: "img/firearms_reload_single_bullet.png"
       description: >
         **Manual weapons only**. Load single shell and fire in same round.
@@ -83,7 +88,7 @@
 
     "Long range":
       icon: "img/firearms_target_range.png"
-      description: 2x to 4x weapon's base range"
+      description: "`2x` to `4x` weapon's base range"
       negative: "Roll hard difficulty // Extreme difficulty roll"
 
     "Surprise attack":
@@ -122,7 +127,7 @@
       description: "Malfunction on: 96+ (skill < 50) or 100 (skill >= 50)"
       negative: "Weapon malfunctions // other consequence"
 
-    target_armour:
+    "Target Armour":
       icon: "img/firearms_armour.png"
       description: "Target is wearing armor"
       negative: "Damage reduced by armor value"
