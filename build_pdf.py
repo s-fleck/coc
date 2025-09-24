@@ -74,41 +74,45 @@ def process_yaml_file(yaml_path):
     # ---------- PDF Setup ----------
     styles = getSampleStyleSheet()
     
-    # Create custom styles
+    # Create custom styles - optimized for compact, readable B&W printing
     page_header_style = ParagraphStyle(
         'PageHeader',
         parent=styles['Heading1'],
-        fontSize=24,
-        spaceAfter=20,
-        textColor=colors.darkblue,
-        alignment=TA_CENTER
+        fontSize=20,
+        spaceAfter=12,
+        textColor=colors.black,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
     )
     
     card_header_style = ParagraphStyle(
         'CardHeader',
         parent=styles['Heading2'],
-        fontSize=16,
-        spaceBefore=5,
-        spaceAfter=8,
-        textColor=colors.darkgreen,
-        leftIndent=0
+        fontSize=12,
+        spaceBefore=0,
+        spaceAfter=3,
+        textColor=colors.black,
+        leftIndent=0,
+        fontName='Helvetica-Bold'
     )
     
     description_style = ParagraphStyle(
         'Description',
         parent=styles['Normal'],
-        fontSize=10,
-        spaceAfter=8,
+        fontSize=9,
+        spaceAfter=4,
         alignment=TA_JUSTIFY,
-        leftIndent=5*mm,
-        rightIndent=5*mm
+        leftIndent=0,
+        rightIndent=0,
+        fontName='Helvetica'
     )
     
     table_cell_style = ParagraphStyle(
         'TableCell',
         parent=styles['Normal'],
-        fontSize=9,
-        alignment=TA_LEFT
+        fontSize=8,
+        alignment=TA_LEFT,
+        fontName='Helvetica'
     )
 
     doc = SimpleDocTemplate(pdf_name, pagesize=A4, topMargin=20*mm, bottomMargin=20*mm)
@@ -118,23 +122,24 @@ def process_yaml_file(yaml_path):
     for section, content in data.items():
         # Page header (top level key)
         elements.append(Paragraph(section.replace("_", " ").title(), page_header_style))
-        elements.append(Spacer(1, 10*mm))
+        elements.append(Spacer(1, 6*mm))
 
         # Process each subsection (actions, modifiers, etc.)
         for subsection_name, subsection_content in content.items():
             if subsection_name.lower() == "modifiers":
-                # Process as mini cards in a 4-column grid
-                elements.append(Spacer(1, 5*mm))
-                elements.append(Paragraph("Modifiers", card_header_style))
+                # Process as mini cards in a 4-column grid - compact layout
                 elements.append(Spacer(1, 3*mm))
+                elements.append(Paragraph("Modifiers", card_header_style))
+                elements.append(Spacer(1, 2*mm))
                 
-                # Create mini card style
+                # Create mini card style - optimized for B&W printing
                 mini_card_style = ParagraphStyle(
                     'MiniCard',
                     parent=styles['Normal'],
-                    fontSize=8,
+                    fontSize=7,
                     alignment=TA_CENTER,
-                    spaceAfter=3
+                    spaceAfter=2,
+                    fontName='Helvetica'
                 )
                 
                 # Convert subsection content to list for processing
@@ -148,13 +153,18 @@ def process_yaml_file(yaml_path):
                     # Create the row with up to 4 mini cards
                     card_cells = []
                     for action_key, props in row_cards:
-                        # Create mini card content
+                        # Create mini card content with heading
                         mini_icon = IconPlaceholder(props.get("icon", ""), width=15*mm, height=15*mm)
+                        
+                        # Add heading for the mini card
+                        heading_text = action_key.replace("_", " ").title()
+                        heading_para = Paragraph(f"<b>{heading_text}</b>", mini_card_style)
+                        
                         effect_text = props.get("effect", "")
                         effect_para = Paragraph(effect_text, mini_card_style)
                         
-                        # Stack icon and effect vertically
-                        mini_card_content = [mini_icon, Spacer(1, 2*mm), effect_para]
+                        # Stack icon, heading, and effect vertically
+                        mini_card_content = [mini_icon, Spacer(1, 1*mm), heading_para, Spacer(1, 1*mm), effect_para]
                         card_cells.append(mini_card_content)
                     
                     # Fill empty cells if less than 4 cards in the row
@@ -163,20 +173,21 @@ def process_yaml_file(yaml_path):
                     
                     mini_card_data.append(card_cells)
                     
-                    # Create table for this row of mini cards
+                    # Create table for this row of mini cards - B&W optimized
                     mini_table = Table(mini_card_data)
                     mini_table.setStyle(TableStyle([
                         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('LEFTPADDING', (0, 0), (-1, -1), 5),
-                        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-                        ('TOPPADDING', (0, 0), (-1, -1), 5),
-                        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-                        ('GRID', (0, 0), (-1, -1), 1, colors.grey),
+                        ('LEFTPADDING', (0, 0), (-1, -1), 3),
+                        ('RIGHTPADDING', (0, 0), (-1, -1), 3),
+                        ('TOPPADDING', (0, 0), (-1, -1), 3),
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+                        ('BACKGROUND', (0, 0), (-1, -1), colors.white),
                     ]))
                     
                     # Keep each row of mini cards together
-                    elements.append(KeepTogether([mini_table, Spacer(1, 3*mm)]))
+                    elements.append(KeepTogether([mini_table, Spacer(1, 2*mm)]))
             
             elif subsection_name.lower() in ["actions", "rules"]:
                 # Process as regular cards (actions, rules, etc.)
@@ -211,42 +222,46 @@ def process_yaml_file(yaml_path):
                     if props.get("effect"):
                         table_data.append(["Effect:", props.get("effect")])
                     
-                    # Build the card content with a simpler approach
+                    # Build the card content - compact layout with heading and description next to icon
                     card_elements = []
                     
-                    # Add the header
-                    card_elements.append(Paragraph(action_key.replace("_", " ").title(), card_header_style))
+                    # Create content to go next to the icon (heading + description)
+                    content_elements = []
                     
-                    # Create a simple layout with icon and description side by side
-                    if description_paragraphs:
-                        # Create a table with icon and description side by side
-                        icon_desc_data = [[icon, description_paragraphs[0]]]
+                    # Add the header
+                    content_elements.append(Paragraph(action_key.replace("_", " ").title(), card_header_style))
+                    
+                    # Add description paragraphs
+                    for para in description_paragraphs:
+                        content_elements.append(para)
+                    
+                    # Create a table with icon on left and all content (header + description) on right
+                    if content_elements:
+                        # Combine all content into a single cell content
+                        content_data = [[icon, content_elements]]
                         
-                        icon_desc_table = Table(icon_desc_data, colWidths=[25*mm, None])
-                        icon_desc_table.setStyle(TableStyle([
+                        content_table = Table(content_data, colWidths=[20*mm, None])
+                        content_table.setStyle(TableStyle([
                             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                            ('LEFTPADDING', (0, 0), (-1, -1), 0),
-                            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-                            ('TOPPADDING', (0, 0), (-1, -1), 5),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                            ('LEFTPADDING', (0, 0), (0, -1), 0),  # Icon column - no left padding
+                            ('LEFTPADDING', (1, 0), (-1, -1), 5),  # Content column - add left padding
+                            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+                            ('TOPPADDING', (0, 0), (-1, -1), 2),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
                         ]))
                         
-                        card_elements.append(icon_desc_table)
-                        
-                        # Add any additional description paragraphs
-                        for para in description_paragraphs[1:]:
-                            card_elements.append(para)
+                        card_elements.append(content_table)
                     else:
-                        # Just icon if no description
-                        icon_table = Table([[icon]], colWidths=[25*mm])
+                        # Just icon if no content
+                        icon_table = Table([[icon]], colWidths=[20*mm])
                         icon_table.setStyle(TableStyle([
                             ('LEFTPADDING', (0, 0), (-1, -1), 0),
-                            ('TOPPADDING', (0, 0), (-1, -1), 5),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                            ('TOPPADDING', (0, 0), (-1, -1), 2),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
                         ]))
                         card_elements.append(icon_table)
                     
-                    # Add cost/gain table if there's data
+                    # Add cost/gain table if there's data - optimized for B&W printing
                     if table_data:
                         # Convert table data to paragraphs
                         table_data_formatted = []
@@ -256,28 +271,28 @@ def process_yaml_file(yaml_path):
                                 Paragraph(str(row[1]), table_cell_style)
                             ])
                         
-                        info_table = Table(table_data_formatted, colWidths=[30*mm, None])
+                        info_table = Table(table_data_formatted, colWidths=[25*mm, None])
                         info_table.setStyle(TableStyle([
-                            ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
+                            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
                             ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
                             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-                            ('FONTSIZE', (0, 0), (-1, -1), 9),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-                            ('TOPPADDING', (0, 0), (-1, -1), 3),
-                            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                            ('LEFTPADDING', (0, 0), (-1, -1), 5),
-                            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+                            ('FONTSIZE', (0, 0), (-1, -1), 8),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
+                            ('TOPPADDING', (0, 0), (-1, -1), 2),
+                            ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
+                            ('LEFTPADDING', (0, 0), (-1, -1), 3),
+                            ('RIGHTPADDING', (0, 0), (-1, -1), 3),
                         ]))
                         
-                        card_elements.append(Spacer(1, 3*mm))
+                        card_elements.append(Spacer(1, 2*mm))
                         card_elements.append(info_table)
                     
                     # Add each card element directly to the main flow
                     # Wrap the entire card including separator in KeepTogether to prevent page breaks
-                    card_with_separator = [LineSeparator(180*mm, 2*mm)]
+                    card_with_separator = [LineSeparator(180*mm, 1*mm)]
                     card_with_separator.extend(card_elements)
-                    card_with_separator.append(Spacer(1, 5*mm))
+                    card_with_separator.append(Spacer(1, 3*mm))
                     
                     elements.append(KeepTogether(card_with_separator))
 
