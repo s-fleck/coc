@@ -1,0 +1,77 @@
+# PDF Color Configuration
+# All colors are defined as RGB values (0.0 to 1.0)
+
+colors:
+  # Main card backgrounds (alternating)
+  card_background_1:
+    r: 0.95
+    g: 0.95
+    b: 0.95
+  card_background_2:
+    r: 0.98 # Very light background
+    g: 0.98
+    b: 1.0 # Slight blue tint
+
+  # Text colors
+  page_header_text:
+    r: 0.0
+    g: 0.0
+    b: 0.0
+  card_header_text:
+    r: 0.0
+    g: 0.0
+    b: 0.0
+  skill_header_text:
+    r: 0.4
+    g: 0.4
+    b: 0.4
+  description_text:
+    r: 0.2
+    g: 0.2
+    b: 0.2
+  table_cell_text:
+    r: 0.1
+    g: 0.1
+    b: 0.1
+
+  # Page header background
+  page_header_background:
+    r: 1.0
+    g: 1.0
+    b: 1.0
+
+  # Modifier cards
+  modifier_background:
+    r: 0.9
+    g: 0.9
+    b: 0.9
+  modifier_spacing:
+    r: 1.0
+    g: 1.0
+    b: 1.0
+
+  # Effect colors
+  positive_effect:
+    r: 0.0
+    g: 0.6
+    b: 0.0
+  negative_effect:
+    r: 0.8
+    g: 0.0
+    b: 0.0
+
+  # Icon placeholder
+  icon_background:
+    r: 0.85
+    g: 0.85
+    b: 0.85
+  icon_border:
+    r: 0.0
+    g: 0.0
+    b: 0.0
+
+  # Separator line
+  separator_line:
+    r: 0.7
+    g: 0.7
+    b: 0.7
