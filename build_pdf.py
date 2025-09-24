@@ -14,12 +14,42 @@ from reportlab.lib.utils import ImageReader
 from PIL import Image
 import os
 
+def load_color_config():
+    """Load color configuration from config.yml"""
+    try:
+        with open('config.yml', 'r') as file:
+            config = yaml.safe_load(file)
+            color_dict = {}
+            for name, rgb in config['colors'].items():
+                color_dict[name] = colors.Color(rgb['r'], rgb['g'], rgb['b'])
+            return color_dict
+    except FileNotFoundError:
+        print("Warning: config.yml not found. Using default colors.")
+        return {
+            'card_background_1': colors.Color(0.95, 0.95, 0.95),
+            'card_background_2': colors.white,
+            'page_header_text': colors.black,
+            'card_header_text': colors.black,
+            'skill_header_text': colors.Color(0.4, 0.4, 0.4),
+            'description_text': colors.Color(0.2, 0.2, 0.2),
+            'table_cell_text': colors.Color(0.1, 0.1, 0.1),
+            'page_header_background': colors.white,
+            'modifier_background': colors.Color(0.9, 0.9, 0.9),
+            'modifier_spacing': colors.white,
+            'positive_effect': colors.Color(0.0, 0.6, 0.0),
+            'negative_effect': colors.Color(0.8, 0.0, 0.0),
+            'icon_background': colors.Color(0.85, 0.85, 0.85),
+            'icon_border': colors.black,
+            'separator_line': colors.Color(0.7, 0.7, 0.7)
+        }
+
 class IconPlaceholder(Flowable):
     """Display an actual icon image or placeholder"""
-    def __init__(self, icon_path, width=20*mm, height=20*mm):
+    def __init__(self, icon_path, width=20*mm, height=20*mm, colors_config=None):
         self.icon_path = icon_path
         self.width = width
         self.height = height
+        self.colors_config = colors_config or {}
     
     def draw(self):
         # Check if the icon file exists
@@ -37,11 +67,14 @@ class IconPlaceholder(Flowable):
     
     def _draw_placeholder(self):
         """Draw a simple rectangular placeholder"""
-        self.canv.setStrokeColor(colors.black)
-        self.canv.setFillColor(colors.lightgrey)
+        icon_border = self.colors_config.get('icon_border', colors.black)
+        icon_bg = self.colors_config.get('icon_background', colors.lightgrey)
+        
+        self.canv.setStrokeColor(icon_border)
+        self.canv.setFillColor(icon_bg)
         self.canv.rect(0, 0, self.width, self.height, fill=1, stroke=1)
         # Add icon text
-        self.canv.setFillColor(colors.black)
+        self.canv.setFillColor(icon_border)
         self.canv.setFont("Helvetica", 8)
         # Center the text in the rectangle
         text_width = self.canv.stringWidth("ICON", "Helvetica", 8)
@@ -50,13 +83,15 @@ class IconPlaceholder(Flowable):
         self.canv.drawString(x, y, "ICON")
 
 class LineSeparator(Flowable):
-    """A simple line separator in muted gray"""
-    def __init__(self, width, height=1):
+    """A simple line separator in configurable color"""
+    def __init__(self, width, height=1, colors_config=None):
         self.width = width
         self.height = height
+        self.colors_config = colors_config or {}
     
     def draw(self):
-        self.canv.setStrokeColor(colors.lightgrey)
+        separator_color = self.colors_config.get('separator_line', colors.lightgrey)
+        self.canv.setStrokeColor(separator_color)
         self.canv.setLineWidth(0.5)
         self.canv.line(0, self.height/2, self.width, self.height/2)
 
@@ -102,18 +137,21 @@ def process_yaml_file(yaml_path):
     with open(yaml_path, "r") as f:
         data = yaml.safe_load(f)
 
+    # Load color configuration
+    colors_config = load_color_config()
+
     # ---------- PDF Setup ----------
     styles = getSampleStyleSheet()
     
-    # Create custom styles - optimized for compact, readable B&W printing
+    # Create custom styles using configurable colors
     page_header_style = ParagraphStyle(
         'PageHeader',
         parent=styles['Heading1'],
         fontSize=20,
         spaceAfter=12,
-        textColor=colors.black,
+        textColor=colors_config['page_header_text'],
+        backColor=colors_config['page_header_background'],
         alignment=TA_CENTER,
-        fontName='Helvetica-Bold'
     )
     
     card_header_style = ParagraphStyle(
@@ -122,19 +160,31 @@ def process_yaml_file(yaml_path):
         fontSize=12,
         spaceBefore=0,
         spaceAfter=3,
-        textColor=colors.black,
+        textColor=colors_config['card_header_text'],
         leftIndent=0,
         fontName='Helvetica-Bold'
     )
     
-    # Style for skill text in header (smaller font)
+    # Enhanced style for modifiers section header
+    modifiers_header_style = ParagraphStyle(
+        'ModifiersHeader',
+        parent=styles['Heading2'],
+        fontSize=12,
+        spaceBefore=0,
+        spaceAfter=3,
+        textColor=colors_config['card_header_text'],
+        leftIndent=0,
+        fontName='Helvetica-Bold'
+    )
+    
+    # Style for skill text in header
     skill_header_style = ParagraphStyle(
         'SkillHeader',
         parent=styles['Normal'],
         fontSize=8,
         spaceBefore=0,
         spaceAfter=0,
-        textColor=colors.black,
+        textColor=colors_config['skill_header_text'],
         leftIndent=0,
         fontName='Helvetica-Oblique'
     )
@@ -147,7 +197,8 @@ def process_yaml_file(yaml_path):
         alignment=TA_JUSTIFY,
         leftIndent=0,
         rightIndent=0,
-        fontName='Helvetica'
+        fontName='Helvetica',
+        textColor=colors_config['description_text']
     )
     
     table_cell_style = ParagraphStyle(
@@ -155,7 +206,8 @@ def process_yaml_file(yaml_path):
         parent=styles['Normal'],
         fontSize=8,
         alignment=TA_LEFT,
-        fontName='Helvetica'
+        fontName='Helvetica',
+        textColor=colors_config['table_cell_text']
     )
 
     doc = SimpleDocTemplate(pdf_name, pagesize=A4, topMargin=20*mm, bottomMargin=20*mm)
@@ -172,7 +224,7 @@ def process_yaml_file(yaml_path):
             if subsection_name.lower() == "modifiers":
                 # Process as mini cards in a 4-column grid - compact layout
                 elements.append(Spacer(1, 3*mm))
-                elements.append(Paragraph("Modifiers", card_header_style))
+                elements.append(Paragraph("Modifiers", modifiers_header_style))
                 elements.append(Spacer(1, 2*mm))
                 
                 # Create mini card style - optimized for B&W printing
@@ -184,19 +236,28 @@ def process_yaml_file(yaml_path):
                     spaceAfter=2,
                     fontName='Helvetica'
                 )
+
+                mini_card_header_style = ParagraphStyle(
+                    'MiniCardHeader',
+                    parent=styles['Normal'],
+                    fontSize=12,
+                    alignment=TA_CENTER,
+                    spaceAfter=2,
+                    fontName='Helvetica'
+                )
                 
                 # Create colored styles for positive/negative effects
                 positive_style = ParagraphStyle(
                     'PositiveEffect',
                     parent=mini_card_style,
-                    textColor=colors.green,
+                    textColor=colors_config['positive_effect'],
                     fontName='Helvetica-Bold'
                 )
                 
                 negative_style = ParagraphStyle(
                     'NegativeEffect', 
                     parent=mini_card_style,
-                    textColor=colors.red,
+                    textColor=colors_config['negative_effect'],
                     fontName='Helvetica-Bold'
                 )
                 
@@ -213,11 +274,11 @@ def process_yaml_file(yaml_path):
                     for action_key, props in row_cards:
                         # Create mini card content with heading
                         icon_path = props.get("icon", "")
-                        mini_icon = IconPlaceholder(icon_path, width=15*mm, height=15*mm)
+                        mini_icon = IconPlaceholder(icon_path, width=15*mm, height=15*mm, colors_config=colors_config)
                         
                         # Add heading for the mini card
                         heading_text = action_key.replace("_", " ").title()
-                        heading_para = Paragraph(f"<b>{heading_text}</b>", mini_card_style)
+                        heading_para = Paragraph(f"<b>{heading_text}</b>", mini_card_header_style)
                         
                         # Create content elements list
                         card_content = [mini_icon, Spacer(1, 1*mm), heading_para]
@@ -259,12 +320,12 @@ def process_yaml_file(yaml_path):
                         ('RIGHTPADDING', (0, 0), (-1, -1), 5),
                         ('TOPPADDING', (0, 0), (-1, -1), 5),
                         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-                        ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
+                        ('BACKGROUND', (0, 0), (-1, -1), colors_config['modifier_background']),
                         # Add white spacing between cards
-                        ('LINEBELOW', (0, 0), (-1, -1), 2, colors.white),
-                        ('LINEAFTER', (0, 0), (-1, -1), 2, colors.white),
-                        ('LINEBEFORE', (0, 0), (-1, -1), 2, colors.white),
-                        ('LINEABOVE', (0, 0), (-1, -1), 2, colors.white),
+                        ('LINEBELOW', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
+                        ('LINEAFTER', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
+                        ('LINEBEFORE', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
+                        ('LINEABOVE', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
                     ]))
                     
                     # Keep each row of mini cards together
@@ -279,7 +340,7 @@ def process_yaml_file(yaml_path):
                     
                     # Create icon placeholder
                     icon_path = props.get("icon", "")
-                    icon = IconPlaceholder(icon_path)
+                    icon = IconPlaceholder(icon_path, colors_config=colors_config)
                     
                     # Description as markdown
                     description_text = props.get("description", "")
@@ -344,7 +405,7 @@ def process_yaml_file(yaml_path):
                         content_data = [[icon, content_elements]]
                         
                         # Determine background color for alternating cards
-                        bg_color = colors.white if card_counter % 2 == 0 else colors.lightgrey
+                        bg_color = colors_config['card_background_1'] if card_counter % 2 == 0 else colors_config['card_background_2']
                         
                         content_table = Table(content_data, colWidths=[20*mm, None])
                         content_table.setStyle(TableStyle([
