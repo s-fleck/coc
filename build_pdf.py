@@ -113,6 +113,18 @@ def process_yaml_file(yaml_path):
         fontName='Helvetica-Bold'
     )
     
+    # Style for skill text in header (smaller font)
+    skill_header_style = ParagraphStyle(
+        'SkillHeader',
+        parent=styles['Normal'],
+        fontSize=8,
+        spaceBefore=0,
+        spaceAfter=0,
+        textColor=colors.black,
+        leftIndent=0,
+        fontName='Helvetica-Oblique'
+    )
+    
     description_style = ParagraphStyle(
         'Description',
         parent=styles['Normal'],
@@ -249,10 +261,6 @@ def process_yaml_file(yaml_path):
                     if props.get("gain"):
                         table_data.append(["Gain:", props.get("gain")])
                         
-                    # Add skill if present
-                    if props.get("skill"):
-                        table_data.append(["Skill:", props.get("skill")])
-                        
                     # Add effect if present
                     if props.get("effect"):
                         table_data.append(["Effect:", props.get("effect")])
@@ -263,8 +271,33 @@ def process_yaml_file(yaml_path):
                     # Create content to go next to the icon (heading + description)
                     content_elements = []
                     
-                    # Add the header
-                    content_elements.append(Paragraph(action_key.replace("_", " ").title(), card_header_style))
+                    # Add the header (with skill if present)
+                    header_title = action_key.replace("_", " ").title()
+                    skill_text = props.get("skill", "")
+                    
+                    if skill_text:
+                        # Create a table with title on left and skill on right
+                        # Calculate width to match the available content width
+                        # Available width = page width - margins - icon width - paddings
+                        available_width = (A4[0] - 40*mm - 20*mm - 5*mm - 8*mm)  # page - margins - icon - left/right padding
+                        header_data = [[
+                            Paragraph(f"<b>{header_title}</b>", card_header_style),
+                            Paragraph(f"<i>{skill_text}</i>", skill_header_style)
+                        ]]
+                        header_table = Table(header_data, colWidths=[available_width * 0.6, available_width * 0.4])
+                        header_table.setStyle(TableStyle([
+                            ('ALIGN', (0, 0), (0, 0), 'LEFT'),     # Title left-aligned
+                            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),    # Skill right-aligned
+                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                            ('LEFTPADDING', (0, 0), (-1, -1), 0),
+                            ('RIGHTPADDING', (0, 0), (-1, -1), 0),
+                            ('TOPPADDING', (0, 0), (-1, -1), 0),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
+                        ]))
+                        content_elements.append(header_table)
+                    else:
+                        # Simple header without skill
+                        content_elements.append(Paragraph(f"<b>{header_title}</b>", card_header_style))
                     
                     # Add description paragraphs
                     for para in description_paragraphs:

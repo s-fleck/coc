@@ -1,7 +1,7 @@
 "Firearms":
   actions:
     fire_weapon:
-      icon: "icon.png"
+      icon: "img/firearms_fire_weapon.png"
       skill: "Firearms (Weapon)"
       description: >
         A single shot attack with your drawn firearm. Success in using the weapon depends on a
@@ -11,7 +11,7 @@
       cost: 1 Combat Action
 
     quick_fire:
-      icon: "icon.png"
+      icon: "img/firearms_quick_fire.png"
       skill: "Firearms (Weapon)"
       description: >
         FIREARMS ONLY. When a combat round starts, state you plan to fire as your first action and
@@ -24,7 +24,7 @@
       gain: "+50 Initiative (DEX) for one round"
 
     aim_weapon:
-      icon: "icon.png"
+      icon: "img/firearms_aimed_fire.png"
       skill: "Firearms (Weapon)"
       description: >
         Spend an entire turn this round to aim your weapon. Upon your next turn, you may roll an
@@ -34,7 +34,7 @@
       gain: "+1 Bonus Die next round"
 
     point_blank_range:
-      icon: "icon.png"
+      icon: "img/firearms_point_blank_range.png"
       skill: "Firearms (Weapon)"
       description: >
         If an opponent is within 1/5th of the shooter's DEX in feet, the shooter gets a bonus die
@@ -45,7 +45,7 @@
       gain: "+1 Bonus Die"
 
     multiple_shot:
-      icon: "icon.png"
+      icon: "img/firearms_multiple_shots.png"
       skill: "Firearms (Handguns)"
       description: >
         HANDGUNS OR BURST FIRE WEAPONS ONLY. If your firearm allows multiple shots with a single turn,
@@ -53,20 +53,20 @@
         round. Each shot taken during this attack must take a penalty die.
       cost: "1 Combat Action, +1 penalty die for each shot taken"
 
-  fire_automatic:
-    icon: "icon.png"
-    skill: "Firearms (Machine Gun // SMG)"
-    description: >
-      AUTOMATIC WEAPONS ONLY. With an automatic weapon, you can fire up to [X] number of bullets in
-      a single volley, with [X] being your weapon skill divided by 10 and rounded down (minimum of
-      3 bullets per volley). Upon a successful hit, half of bullets (rounded down) fired in a volley
-      hit the target. In an extreme success all bullets hit, plus half rounded down are impaling
-      strikes. Successive volleys can be fired in a single turn, however each successive volley
-      increases the difficulty of the skill check.
-    cost: >
-      1 Combat Action for single volley,
-      1 Turn for multiple volleys,
-      +1 penalty die / difficulty increase for each successive volley in a single turn
+    fire_automatic:
+      icon: "img/firearms_fire_automatic.png"
+      skill: "Firearms (Machine Gun // SMG)"
+      description: >
+        AUTOMATIC WEAPONS ONLY. With an automatic weapon, you can fire up to [X] number of bullets in
+        a single volley, with [X] being your weapon skill divided by 10 and rounded down (minimum of
+        3 bullets per volley). Upon a successful hit, half of bullets (rounded down) fired in a volley
+        hit the target. In an extreme success all bullets hit, plus half rounded down are impaling
+        strikes. Successive volleys can be fired in a single turn, however each successive volley
+        increases the difficulty of the skill check.
+      cost: >
+        1 Combat Action for single volley,
+        1 Turn for multiple volleys,
+        +1 penalty die / difficulty increase for each successive volley in a single turn
 
     reload_weapon:
       icon: "img/firearms_reload.png"
@@ -108,17 +108,17 @@
       negative: "+1 Penalty Die"
 
     sprinting:
-      icon: "icon.png"
+      icon: "img/firearms_sprinting.png"
       positive: "Player is sprinting during combat round: "
       negative: "+1 Penalty Die on shots"
 
     fast_moving_target:
-      icon: "icon.png"
+      icon: "img/firearms_fast_moving_target.png"
       description: "Target is sprinting (MOV 8+): +1 Penalty Die on shots"
       effect_type: "negative"
 
     target_dive:
-      icon: "icon.png"
+      icon: "img/firearms_target_dive.png"
       description: "Target dives for cover + makes successful dodge roll"
       negative: "+1 Penalty Die on shots"
 
@@ -128,7 +128,7 @@
       negative: "+1 Penalty Die on shots // unable to hit"
 
     weapon_malfunction:
-      icon: "icon.png"
+      icon: "img/firearms_weapon_malfunction.png"
       description: "Roll 96+ (if skill below 50) or 100 (if skill above 50)"
       negative: "Weapon malfunction // other consequence"
 
