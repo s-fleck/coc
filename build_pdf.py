@@ -160,12 +160,29 @@ def process_yaml_file(yaml_path):
                         heading_text = action_key.replace("_", " ").title()
                         heading_para = Paragraph(f"<b>{heading_text}</b>", mini_card_style)
                         
-                        effect_text = props.get("effect", "")
-                        effect_para = Paragraph(effect_text, mini_card_style)
+                        # Create content elements list
+                        card_content = [mini_icon, Spacer(1, 1*mm), heading_para]
                         
-                        # Stack icon, heading, and effect vertically
-                        mini_card_content = [mini_icon, Spacer(1, 1*mm), heading_para, Spacer(1, 1*mm), effect_para]
-                        card_cells.append(mini_card_content)
+                        # Add description if present
+                        description_text = props.get("description", "")
+                        if description_text:
+                            desc_para = Paragraph(description_text, mini_card_style)
+                            card_content.extend([Spacer(1, 1*mm), desc_para])
+                        
+                        # Add positive effect if present (red/bold for color, bold for B&W)
+                        positive_text = props.get("positive", "")
+                        if positive_text:
+                            positive_para = Paragraph(f'<b>[+] {positive_text}</b>', mini_card_style)
+                            card_content.extend([Spacer(1, 1*mm), positive_para])
+                        
+                        # Add negative effect if present (green/italic for color, italic for B&W) 
+                        negative_text = props.get("negative", "")
+                        if negative_text:
+                            negative_para = Paragraph(f'<i>[-] {negative_text}</i>', mini_card_style)
+                            card_content.extend([Spacer(1, 1*mm), negative_para])
+                        
+                        # Stack all content vertically
+                        card_cells.append(card_content)
                     
                     # Fill empty cells if less than 4 cards in the row
                     while len(card_cells) < 4:

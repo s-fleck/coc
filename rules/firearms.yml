@@ -1,4 +1,4 @@
-"Firearm Actions":
+"Firearms":
   actions:
     fire_weapon:
       icon: "icon.png"
@@ -88,50 +88,56 @@
   modifiers:
     impaling_strike:
       icon: "icon.png"
-      effect: "Roll Extreme Success with firearm: Full Damage + Damage Roll"
+      description: "Roll Extreme Success with firearm"
+      positive: "Full Damage + Damage Roll"
 
     target_range:
       icon: "icon.png"
-      effect: >
-        Target distance is x2 to x4 weapon range:
-        Hard difficulty roll // Extreme difficulty roll
+      description: "Target distance is x2 to x4 weapon range"
+      negative: "Hard difficulty roll // Extreme difficulty roll"
 
     surprise_attack:
       icon: "icon.png"
-      effect: "+1 Bonus Die"
+      description: "Target does not antictipate attack"
+      effect_type: "+1 Bonus Die"
 
     target_size:
       icon: "icon.png"
-      effect: >
-        Target build is -2 // target build is +4:
-        +1 penalty die // +1 bonus die
+      description: "Target build is -2: // Target build is +4"
+      positive: "+1 Bonus Die"
+      negative: "+1 Penalty Die"
 
     sprinting:
       icon: "icon.png"
-      effect: "Player is sprinting during combat round: +1 Penalty Die on shots"
+      positive: "Player is sprinting during combat round: "
+      negative: "+1 Penalty Die on shots"
 
     fast_moving_target:
       icon: "icon.png"
-      effect: "Target is sprinting (MOV 8+): +1 Penalty Die on shots"
+      description: "Target is sprinting (MOV 8+): +1 Penalty Die on shots"
+      effect_type: "negative"
 
     target_dive:
       icon: "icon.png"
-      effect: "Target dives for cover + makes successful dodge roll: +1 Penalty Die on shots"
+      description: "Target dives for cover + makes successful dodge roll"
+      negative: "+1 Penalty Die on shots"
 
     in_cover:
       icon: "icon.png"
-      effect: "Target is in partial / full cover: +1 Penalty Die on shots // unable to hit"
+      description: "Target is in partial / full cover"
+      negative: "+1 Penalty Die on shots // unable to hit"
 
     weapon_malfunction:
       icon: "icon.png"
-      effect: >
-        Roll 96+ (if skill below 50) or 100 (if skill above 50):
-        Weapon malfunction // other consequence
+      description: "Roll 96+ (if skill below 50) or 100 (if skill above 50)"
+      negative: "Weapon malfunction // other consequence"
 
     target_armour:
       icon: "icon.png"
-      effect: "Enemy is armoured: Damage taken is reduced by armour"
+      description: "Enemy is armoured"
+      negative: "Damage taken is reduced by armour"
 
     fire_into_melee:
       icon: "icon.png"
-      effect: "Target is engaged in melee combat with an ally: +1 Penalty Die, friendly fire on fumble"
+      description: "Target is engaged in melee combat with an ally"
+      negative: "+1 Penalty Die, friendly fire on fumble"
