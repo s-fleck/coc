@@ -10,16 +10,33 @@ import glob
 import markdown
 from reportlab.platypus.flowables import Flowable
 from reportlab.graphics.shapes import Line
+from reportlab.lib.utils import ImageReader
+from PIL import Image
+import os
 
 class IconPlaceholder(Flowable):
-    """A simple placeholder for an icon"""
-    def __init__(self, icon_name, width=20*mm, height=20*mm):
-        self.icon_name = icon_name
+    """Display an actual icon image or placeholder"""
+    def __init__(self, icon_path, width=20*mm, height=20*mm):
+        self.icon_path = icon_path
         self.width = width
         self.height = height
     
     def draw(self):
-        # Draw a simple rectangular placeholder for the icon
+        # Check if the icon file exists
+        if self.icon_path and os.path.exists(self.icon_path):
+            try:
+                # Load and draw the actual image
+                img = ImageReader(self.icon_path)
+                self.canv.drawImage(img, 0, 0, self.width, self.height, preserveAspectRatio=True, mask='auto')
+            except Exception as e:
+                # Fall back to placeholder if image loading fails
+                self._draw_placeholder()
+        else:
+            # Draw placeholder if no image or file doesn't exist
+            self._draw_placeholder()
+    
+    def _draw_placeholder(self):
+        """Draw a simple rectangular placeholder"""
         self.canv.setStrokeColor(colors.black)
         self.canv.setFillColor(colors.lightgrey)
         self.canv.rect(0, 0, self.width, self.height, fill=1, stroke=1)
@@ -154,7 +171,8 @@ def process_yaml_file(yaml_path):
                     card_cells = []
                     for action_key, props in row_cards:
                         # Create mini card content with heading
-                        mini_icon = IconPlaceholder(props.get("icon", ""), width=15*mm, height=15*mm)
+                        icon_path = props.get("icon", "")
+                        mini_icon = IconPlaceholder(icon_path, width=15*mm, height=15*mm)
                         
                         # Add heading for the mini card
                         heading_text = action_key.replace("_", " ").title()
@@ -213,8 +231,8 @@ def process_yaml_file(yaml_path):
                     card_elements = []
                     
                     # Create icon placeholder
-                    icon_name = props.get("icon", "")
-                    icon = IconPlaceholder(icon_name)
+                    icon_path = props.get("icon", "")
+                    icon = IconPlaceholder(icon_path)
                     
                     # Description as markdown
                     description_text = props.get("description", "")

@@ -69,7 +69,7 @@
       +1 penalty die / difficulty increase for each successive volley in a single turn
 
     reload_weapon:
-      icon: "icon.png"
+      icon: "img/firearms_reload.png"
       description: >
         Reload your weapon. Each weapon has a different reload speed. It takes one combat action to
         load 2 shells into any weapon that requires manual loading of individual bullets, such as
@@ -79,7 +79,7 @@
       cost: 1 Combat Action
 
     single_bullet_reload:
-      icon: "icon.png"
+      icon: "img/firearms_reload_single_bullet.png"
       description: >
         On weapons with manual reloading, you can load a single shell into the weapon and fire in
         the same combat round, however that combat action will incur a penalty die.
@@ -87,22 +87,22 @@
 
   modifiers:
     impaling_strike:
-      icon: "icon.png"
+      icon: "img/firearms_impaling_strike.png"
       description: "Roll Extreme Success with firearm"
       positive: "Full Damage + Damage Roll"
 
     target_range:
-      icon: "icon.png"
+      icon: "img/firearms_target_range.png"
       description: "Target distance is x2 to x4 weapon range"
       negative: "Hard difficulty roll // Extreme difficulty roll"
 
     surprise_attack:
-      icon: "icon.png"
+      icon: "img/firearms_surprise_attack.png"
       description: "Target does not antictipate attack"
       effect_type: "+1 Bonus Die"
 
     target_size:
-      icon: "icon.png"
+      icon: "img/firearms_target_size.png"
       description: "Target build is -2: // Target build is +4"
       positive: "+1 Bonus Die"
       negative: "+1 Penalty Die"
@@ -123,7 +123,7 @@
       negative: "+1 Penalty Die on shots"
 
     in_cover:
-      icon: "icon.png"
+      icon: "img/firearms_cover.png"
       description: "Target is in partial / full cover"
       negative: "+1 Penalty Die on shots // unable to hit"
 
@@ -133,11 +133,11 @@
       negative: "Weapon malfunction // other consequence"
 
     target_armour:
-      icon: "icon.png"
+      icon: "img/firearms_armour.png"
       description: "Enemy is armoured"
       negative: "Damage taken is reduced by armour"
 
     fire_into_melee:
-      icon: "icon.png"
+      icon: "img/firearms_fire_into_meelee.png"
       description: "Target is engaged in melee combat with an ally"
       negative: "+1 Penalty Die, friendly fire on fumble"
