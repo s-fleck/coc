@@ -112,8 +112,15 @@ def markdown_to_paragraphs(md_text, style):
     text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
     text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
     
+    # Handle bullet points (HTML lists)
+    # Convert <ul><li>item</li></ul> to bullet points
+    text = re.sub(r'<ul>', '', text)  # Remove ul tags
+    text = re.sub(r'</ul>', '<br/>', text)  # Replace closing ul with line break
+    text = re.sub(r'<li>(.*?)</li>', r'• \1<br/>', text)  # Convert li to bullet points
+    
     # Clean up extra line breaks and HTML entities
     text = re.sub(r'<br/><br/>$', '', text)  # Remove trailing breaks
+    text = re.sub(r'<br/>$', '', text)  # Remove single trailing break
     text = text.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&')
     
     # Split on double line breaks for multiple paragraphs
