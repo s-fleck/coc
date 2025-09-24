@@ -238,6 +238,7 @@ def process_yaml_file(yaml_path):
             
             elif subsection_name.lower() in ["actions", "rules"]:
                 # Process as regular cards (actions, rules, etc.)
+                card_counter = 0  # Counter for alternating backgrounds
                 for action_key, props in subsection_content.items():
                     # Create a regular card for each action
                     card_elements = []
@@ -308,8 +309,12 @@ def process_yaml_file(yaml_path):
                         # Combine all content into a single cell content
                         content_data = [[icon, content_elements]]
                         
+                        # Determine background color for alternating cards
+                        bg_color = colors.white if card_counter % 2 == 0 else colors.lightgrey
+                        
                         content_table = Table(content_data, colWidths=[20*mm, None])
                         content_table.setStyle(TableStyle([
+                            ('BACKGROUND', (0, 0), (-1, -1), bg_color),
                             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                             ('LEFTPADDING', (0, 0), (0, -1), 0),  # Icon column - no left padding
                             ('LEFTPADDING', (1, 0), (-1, -1), 5),  # Content column - add left padding
@@ -341,28 +346,29 @@ def process_yaml_file(yaml_path):
                         
                         info_table = Table(table_data_formatted, colWidths=[25*mm, None])
                         info_table.setStyle(TableStyle([
-                            ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+                            ('BACKGROUND', (0, 0), (-1, -1), bg_color),
                             ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
                             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
                             ('FONTSIZE', (0, 0), (-1, -1), 8),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
-                            ('TOPPADDING', (0, 0), (-1, -1), 2),
-                            ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-                            ('LEFTPADDING', (0, 0), (-1, -1), 3),
-                            ('RIGHTPADDING', (0, 0), (-1, -1), 3),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
+                            ('TOPPADDING', (0, 0), (-1, -1), 6),  # Increased to replace removed spacer
+                            ('LEFTPADDING', (0, 0), (-1, -1), 5),
+                            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ]))
                         
-                        card_elements.append(Spacer(1, 2*mm))
                         card_elements.append(info_table)
                     
                     # Add each card element directly to the main flow
-                    # Wrap the entire card including separator in KeepTogether to prevent page breaks
-                    card_with_separator = [LineSeparator(180*mm, 1*mm)]
-                    card_with_separator.extend(card_elements)
+                    # Wrap the entire card in KeepTogether to prevent page breaks
+                    card_with_separator = card_elements.copy()
                     card_with_separator.append(Spacer(1, 3*mm))
                     
                     elements.append(KeepTogether(card_with_separator))
+                    
+                    # Increment card counter for alternating backgrounds
+                    card_counter += 1
 
         # Add page break between sections
         if section != list(data.keys())[-1]:  # Don't add page break after last section
