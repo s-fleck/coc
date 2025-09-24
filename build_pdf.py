@@ -68,13 +68,27 @@ def markdown_to_paragraphs(md_text, style):
     # Convert markdown to HTML
     html = markdown.markdown(md_text.strip())
     
-    # Simple conversion - just handle basic formatting
-    # Remove HTML tags for now and return as paragraph
+    # Convert HTML to ReportLab compatible format
     import re
-    text = re.sub('<[^<]+?>', '', html)
-    text = text.replace('&gt;', '>').replace('&lt;', '<')
     
-    return [Paragraph(text, style)]
+    # Convert common HTML tags to ReportLab format
+    text = html
+    text = re.sub(r'<p>(.*?)</p>', r'\1<br/><br/>', text)  # Paragraphs
+    text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
+    text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
+    
+    # Clean up extra line breaks and HTML entities
+    text = re.sub(r'<br/><br/>$', '', text)  # Remove trailing breaks
+    text = text.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&')
+    
+    # Split on double line breaks for multiple paragraphs
+    paragraphs = []
+    parts = text.split('<br/><br/>')
+    for part in parts:
+        if part.strip():
+            paragraphs.append(Paragraph(part.strip(), style))
+    
+    return paragraphs if paragraphs else [Paragraph(text, style)]
 
 # ---------- Process YAML Files ----------
 def process_yaml_file(yaml_path):
