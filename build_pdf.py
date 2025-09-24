@@ -121,6 +121,10 @@ def markdown_to_paragraphs(md_text, style):
     text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
     text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
     
+    # Handle inline code formatting (backticks in markdown)
+    # Convert <code> tags to a styled format that looks like code
+    text = re.sub(r'<code>(.*?)</code>', r'<font name="Courier"><b>\1</b></font>', text)  # Code style
+    
     # Handle bullet points (HTML lists)
     text = re.sub(r'<ul>', '', text)  # Remove ul tags
     text = re.sub(r'</ul>', '<br/>', text)  # Replace closing ul with line break
@@ -148,6 +152,28 @@ def markdown_to_paragraphs(md_text, style):
             paragraphs.append(Paragraph(part.strip(), style))
     
     return paragraphs if paragraphs else [Paragraph(text, style)]
+
+def markdown_to_text(md_text):
+    """Convert markdown text to reportlab-compatible text (for single line properties)"""
+    if not md_text:
+        return ""
+    
+    # Convert markdown to HTML
+    html = markdown.markdown(str(md_text).strip())
+    
+    import re
+    # Convert HTML to ReportLab compatible format
+    text = html
+    # Remove paragraph tags for single-line content
+    text = re.sub(r'<p>(.*?)</p>', r'\1', text)
+    text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
+    text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
+    text = re.sub(r'<code>(.*?)</code>', r'<font name="Courier"><b>\1</b></font>', text)  # Code
+    
+    # Clean up HTML entities
+    text = text.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&')
+    
+    return text
 
 # ---------- Process YAML Files ----------
 def process_yaml_file(yaml_path):
@@ -318,12 +344,14 @@ def process_yaml_file(yaml_path):
                         negative_text = props.get("negative", "")
                         
                         if positive_text:
-                            positive_para = Paragraph(f'{positive_text}', positive_style)
+                            positive_formatted = markdown_to_text(positive_text)
+                            positive_para = Paragraph(positive_formatted, positive_style)
                             card_content.extend([Spacer(1, 1*mm), positive_para])
                         
                         # Add negative effect if present - green color with reduced spacing if positive exists
                         if negative_text:
-                            negative_para = Paragraph(f'{negative_text}', negative_style)
+                            negative_formatted = markdown_to_text(negative_text)
+                            negative_para = Paragraph(negative_formatted, negative_style)
                             # Use smaller spacer if positive effect already exists
                             spacer_size = 0.3*mm if positive_text else 1*mm
                             card_content.extend([Spacer(1, spacer_size), negative_para])
@@ -377,15 +405,18 @@ def process_yaml_file(yaml_path):
                     
                     # Add cost if present
                     if props.get("cost"):
-                        table_data.append(["Cost:", props.get("cost")])
+                        cost_formatted = markdown_to_text(props.get("cost"))
+                        table_data.append(["Cost:", cost_formatted])
                     
                     # Add gain if present  
                     if props.get("gain"):
-                        table_data.append(["Gain:", props.get("gain")])
+                        gain_formatted = markdown_to_text(props.get("gain"))
+                        table_data.append(["Gain:", gain_formatted])
                         
                     # Add effect if present
                     if props.get("effect"):
-                        table_data.append(["Effect:", props.get("effect")])
+                        effect_formatted = markdown_to_text(props.get("effect"))
+                        table_data.append(["Effect:", effect_formatted])
                     
                     # Build the card content - compact layout with heading and description next to icon
                     card_elements = []
@@ -402,9 +433,10 @@ def process_yaml_file(yaml_path):
                         # Calculate width to match the available content width
                         # Available width = page width - margins - icon width - paddings
                         available_width = (A4[0] - 40*mm - 20*mm - 5*mm - 8*mm)  # page - margins - icon - left/right padding
+                        skill_formatted = markdown_to_text(skill_text)
                         header_data = [[
                             Paragraph(f"<b>{header_title}</b>", card_header_style),
-                            Paragraph(f"<i>{skill_text}</i>", skill_header_style)
+                            Paragraph(f"<i>{skill_formatted}</i>", skill_header_style)
                         ]]
                         header_table = Table(header_data, colWidths=[available_width * 0.6, available_width * 0.4])
                         header_table.setStyle(TableStyle([
