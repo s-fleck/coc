@@ -189,14 +189,14 @@ def process_yaml_file(yaml_path):
                 positive_style = ParagraphStyle(
                     'PositiveEffect',
                     parent=mini_card_style,
-                    textColor=colors.red,
+                    textColor=colors.green,
                     fontName='Helvetica-Bold'
                 )
                 
                 negative_style = ParagraphStyle(
                     'NegativeEffect', 
                     parent=mini_card_style,
-                    textColor=colors.green,
+                    textColor=colors.red,
                     fontName='Helvetica-Bold'
                 )
                 
