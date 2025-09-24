@@ -49,9 +49,10 @@
       icon: "img/firearms_fire_automatic.png"
       skill: "Firearms (Machine Gun // SMG)"
       description: >
-        **Automatic weapons only**. Fire up to *skill/10* bullets (rounded down, min 3) per volley. **Success**: 
-        half the bullets (rounded down) hit . **Extreme**: all hit, half are impaling. *Multiple volleys increase 
-        difficulty*.
+        **Automatic weapons only**. Fire up to *skill/10* bullets (rounded down, min 3) per volley. 
+        **Success**: half the bullets (rounded down) hit. 
+        **Extreme success**: all hit, half are impaling. 
+        *Multiple volleys increase difficulty*.
       cost: >
         1 Combat Action for single volley,
         1 Turn for multiple volleys,
