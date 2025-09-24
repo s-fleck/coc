@@ -49,13 +49,11 @@
       icon: "img/firearms_fire_automatic.png"
       skill: "Firearms (Machine Gun // SMG)"
       description: |
-        **Automatic weapons only**. Fire up to *skill/10* bullets (rounded down, min 3) per volley.
-        
+        **Automatic weapons only**. Fire up to *skill/10* bullets (rounded down, min 3) per volley. Multiple volleys are possible but increase difficulty.
+
         - **Success**: half the bullets (rounded down) hit
         - **Extreme success**: all hit, half are impaling
-        
-        *Multiple volleys increase difficulty*.
-      cost: >
+      cost: |
         1 Combat Action for single volley,
         1 Turn for multiple volleys,
         +1 penalty die / difficulty increase for each successive volley in a single turn
@@ -75,58 +73,58 @@
       cost: "+1 Penalty die for combat roll"
 
   modifiers:
-    impaling_strike:
+    "Impaling strike":
       icon: "img/firearms_impaling_strike.png"
       description: "**Extreme Success** with firearm attack"
       positive: "Full Damage + Damage Roll"
 
-    target_range:
+    "Long range":
       icon: "img/firearms_target_range.png"
-      description: "**Long range**: 2x to 4x weapon's base range"
-      negative: "Hard difficulty roll // Extreme difficulty roll"
+      description: 2x to 4x weapon's base range"
+      negative: "Roll hard difficulty // Extreme difficulty roll"
 
-    surprise_attack:
+    "Surprise attack":
       icon: "img/firearms_surprise_attack.png"
-      description: "**Target unaware** of incoming attack"
+      description: "Target unaware of incoming attack"
       positive: "+1 Bonus Die"
 
-    target_size:
+    "Target size":
       icon: "img/firearms_target_size.png"
       description: "**Small target** (Build -2) // **Large target** (Build +4)"
       positive: "+1 Bonus Die"
       negative: "+1 Penalty Die"
 
-    sprinting:
+    Sprinting:
       icon: "img/firearms_sprinting.png"
-      description: "**Shooter is sprinting** during combat round"
+      description: "Shooter is sprinting during combat round"
       negative: "+1 Penalty Die on shots"
 
-    fast_moving_target:
+    "Fast-moving target":
       icon: "img/firearms_fast_moving_target.png"
-      description: "**Target sprinting** (MOV 8+)"
+      description: "Target ist sprinting (MOV 8+)"
       negative: "+1 Penalty Die on shots"
 
-    target_dive:
+    "Target dives":
       icon: "img/firearms_target_dive.png"
-      description: "**Target dives for cover** + makes successful Dodge roll"
+      description: "Target dives for cover + makes successful Dodge roll"
       negative: "+1 Penalty Die on shots"
 
-    in_cover:
+    "In cover":
       icon: "img/firearms_cover.png"
-      description: "**Target behind cover** (partial/full)"
+      description: "Target behind cover (partial/full)"
       negative: "+1 Penalty Die // unable to hit"
 
-    weapon_malfunction:
+    "Malfunction":
       icon: "img/firearms_weapon_malfunction.png"
-      description: "**Malfunction on**: 96+ (skill <50) or 100 (skill ≥50)"
+      description: "Malfunction on: 96+ (skill < 50) or 100 (skill >= 50)"
       negative: "Weapon malfunctions // other consequence"
 
     target_armour:
       icon: "img/firearms_armour.png"
-      description: "**Target wearing armor**"
+      description: "Target is wearing armor"
       negative: "Damage reduced by armor value"
 
-    fire_into_melee:
-      icon: "img/firearms_fire_into_meelee.png"
-      description: "**Target engaged in melee** with ally"
+    "Fire into melee":
+      icon: "img/firearms_fire_into_melee.png"
+      description: "Target engaged in melee with ally"
       negative: "+1 Penalty Die, friendly fire on fumble"

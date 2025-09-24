@@ -175,13 +175,12 @@ def process_yaml_file(yaml_path):
     # Enhanced style for modifiers section header
     modifiers_header_style = ParagraphStyle(
         'ModifiersHeader',
-        parent=styles['Heading2'],
-        fontSize=12,
-        spaceBefore=0,
-        spaceAfter=3,
-        textColor=colors_config['card_header_text'],
-        leftIndent=0,
-        fontName='Helvetica-Bold'
+        parent=styles['Heading1'],
+        fontSize=20,
+        spaceAfter=12,
+        textColor=colors_config['page_header_text'],
+        backColor=colors_config['page_header_background'],
+        alignment=TA_CENTER,
     )
     
     # Style for skill text in header
@@ -299,15 +298,18 @@ def process_yaml_file(yaml_path):
                         
                         # Add positive effect if present - red color
                         positive_text = props.get("positive", "")
+                        negative_text = props.get("negative", "")
+                        
                         if positive_text:
                             positive_para = Paragraph(f'{positive_text}', positive_style)
                             card_content.extend([Spacer(1, 1*mm), positive_para])
                         
-                        # Add negative effect if present - green color
-                        negative_text = props.get("negative", "")
+                        # Add negative effect if present - green color with reduced spacing if positive exists
                         if negative_text:
                             negative_para = Paragraph(f'{negative_text}', negative_style)
-                            card_content.extend([Spacer(1, 1*mm), negative_para])
+                            # Use smaller spacer if positive effect already exists
+                            spacer_size = 0.3*mm if positive_text else 1*mm
+                            card_content.extend([Spacer(1, spacer_size), negative_para])
                         
                         # Stack all content vertically
                         card_cells.append(card_content)
@@ -453,8 +455,8 @@ def process_yaml_file(yaml_path):
                             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
                             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
                             ('FONTSIZE', (0, 0), (-1, -1), 8),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-                            ('TOPPADDING', (0, 0), (-1, -1), 6),  # Increased to replace removed spacer
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
+                            ('TOPPADDING', (0, 0), (-1, -1), 2),
                             ('LEFTPADDING', (0, 0), (-1, -1), 5),
                             ('RIGHTPADDING', (0, 0), (-1, -1), 5),
                             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
