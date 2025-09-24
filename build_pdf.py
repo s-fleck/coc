@@ -5,6 +5,8 @@ from reportlab.lib import colors
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch, mm
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_JUSTIFY
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 import os
 import glob
 import markdown
@@ -17,7 +19,7 @@ import os
 def load_color_config():
     """Load color configuration from config.yml"""
     try:
-        with open('config.yml', 'r') as file:
+        with open('config.yml', 'r', encoding='utf-8') as file:
             config = yaml.safe_load(file)
             color_dict = {}
             for name, rgb in config['colors'].items():
@@ -100,26 +102,41 @@ def markdown_to_paragraphs(md_text, style):
     if not md_text:
         return []
     
-    # Convert markdown to HTML
-    html = markdown.markdown(md_text.strip())
-    
-    # Convert HTML to ReportLab compatible format
+    # First, handle double newlines in the raw text before markdown processing
+    # This is important for literal block scalars (|) in YAML
     import re
     
-    # Convert common HTML tags to ReportLab format
+    # Normalize line endings and handle paragraph breaks
+    normalized_text = md_text.strip()
+    # Convert double newlines (paragraph breaks) to a special marker
+    paragraph_marker = "|||PARAGRAPH_BREAK|||"
+    normalized_text = re.sub(r'\n\s*\n', f'\n\n{paragraph_marker}\n\n', normalized_text)
+    
+    # Convert markdown to HTML
+    html = markdown.markdown(normalized_text)
+    
+    # Convert HTML to ReportLab compatible format
     text = html
-    text = re.sub(r'<p>(.*?)</p>', r'\1<br/><br/>', text)  # Paragraphs
+    text = re.sub(r'<p>(.*?)</p>', r'\1<br/><br/>', text)  # Convert HTML paragraphs
     text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
     text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
     
     # Handle bullet points (HTML lists)
-    # Convert <ul><li>item</li></ul> to bullet points
     text = re.sub(r'<ul>', '', text)  # Remove ul tags
     text = re.sub(r'</ul>', '<br/>', text)  # Replace closing ul with line break
     text = re.sub(r'<li>(.*?)</li>', r'• \1<br/>', text)  # Convert li to bullet points
     
+    # Convert our paragraph break markers to actual breaks
+    text = text.replace(paragraph_marker, '<br/><br/>')
+    # Also handle the marker wrapped in HTML paragraphs
+    text = re.sub(rf'<p>{re.escape(paragraph_marker)}</p>', '<br/><br/>', text)
+    
+    # Handle manual line breaks from HTML <br> tags (if any exist)
+    text = re.sub(r'<br\s*/?>', '<br/>', text)  # Normalize br tags
+    
     # Clean up extra line breaks and HTML entities
-    text = re.sub(r'<br/><br/>$', '', text)  # Remove trailing breaks
+    text = re.sub(r'<br/><br/><br/>', '<br/><br/>', text)  # Remove triple breaks
+    text = re.sub(r'<br/><br/>$', '', text)  # Remove trailing double breaks
     text = re.sub(r'<br/>$', '', text)  # Remove single trailing break
     text = text.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&')
     
@@ -141,7 +158,7 @@ def process_yaml_file(yaml_path):
     print(f"Processing: {yaml_path} → {pdf_name}")
 
     # Load YAML data
-    with open(yaml_path, "r") as f:
+    with open(yaml_path, "r", encoding='utf-8') as f:
         data = yaml.safe_load(f)
 
     # Load color configuration

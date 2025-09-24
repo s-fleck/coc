@@ -3,9 +3,11 @@
     fire_weapon:
       icon: "img/firearms_fire_weapon.png"
       skill: "Firearms (Weapon)"
-      description: >
+      description: |
         **Single shot attack** with drawn firearm. Use appropriate weapon skill (Handgun, Rifle, 
-        Shotgun, etc.). **Extreme success** causes impaling strike (except flamethrowers).
+        Shotgun, etc.). 
+
+        **Extreme success** causes impaling strike (except flamethrowers).
       cost: 1 Combat Action
 
     quick_fire:
@@ -26,7 +28,7 @@
         **Spend entire turn aiming**. Next turn, gain bonus die if firing is your first action. 
         *Lost if you take damage or move before firing*.
       cost: 1 turn
-      gain: "+1 Bonus Die next round"
+      gain: "+1 Bonus die next round"
 
     point_blank_range:
       icon: "img/firearms_point_blank_range.png"
@@ -35,7 +37,7 @@
         **Target within 1/5 of DEX in feet**. Gain bonus die to attack. *Shooter vulnerable to 
         melee attacks and disarming*. Target cannot dodge or fight back against firearm attacks.
       cost: 1 Combat Action
-      gain: "+1 Bonus Die"
+      gain: "+1 Bonus die"
 
     multiple_shot:
       icon: "img/firearms_multiple_shots.png"
@@ -86,33 +88,33 @@
     "Surprise attack":
       icon: "img/firearms_surprise_attack.png"
       description: "Target unaware of incoming attack"
-      positive: "+1 Bonus Die"
+      positive: "+1 Bonus die"
 
     "Target size":
       icon: "img/firearms_target_size.png"
       description: "**Small target** (Build -2) // **Large target** (Build +4)"
-      positive: "+1 Bonus Die"
-      negative: "+1 Penalty Die"
+      positive: "+1 Bonus die"
+      negative: "+1 Penalty die"
 
     Sprinting:
       icon: "img/firearms_sprinting.png"
       description: "Shooter is sprinting during combat round"
-      negative: "+1 Penalty Die on shots"
+      negative: "+1 Penalty die on shots"
 
     "Fast-moving target":
       icon: "img/firearms_fast_moving_target.png"
       description: "Target ist sprinting (MOV 8+)"
-      negative: "+1 Penalty Die on shots"
+      negative: "+1 Penalty die on shots"
 
     "Target dives":
       icon: "img/firearms_target_dive.png"
       description: "Target dives for cover + makes successful Dodge roll"
-      negative: "+1 Penalty Die on shots"
+      negative: "+1 Penalty die on shots"
 
     "In cover":
       icon: "img/firearms_cover.png"
       description: "Target behind cover (partial/full)"
-      negative: "+1 Penalty Die // unable to hit"
+      negative: "+1 Penalty die // unable to hit"
 
     "Malfunction":
       icon: "img/firearms_weapon_malfunction.png"
@@ -127,4 +129,4 @@
     "Fire into melee":
       icon: "img/firearms_fire_into_melee.png"
       description: "Target engaged in melee with ally"
-      negative: "+1 Penalty Die, friendly fire on fumble"
+      negative: "+1 Penalty die, friendly fire on fumble"
