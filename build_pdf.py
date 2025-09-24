@@ -185,6 +185,21 @@ def process_yaml_file(yaml_path):
                     fontName='Helvetica'
                 )
                 
+                # Create colored styles for positive/negative effects
+                positive_style = ParagraphStyle(
+                    'PositiveEffect',
+                    parent=mini_card_style,
+                    textColor=colors.red,
+                    fontName='Helvetica-Bold'
+                )
+                
+                negative_style = ParagraphStyle(
+                    'NegativeEffect', 
+                    parent=mini_card_style,
+                    textColor=colors.green,
+                    fontName='Helvetica-Bold'
+                )
+                
                 # Convert subsection content to list for processing
                 mini_cards = list(subsection_content.items())
                 
@@ -210,19 +225,20 @@ def process_yaml_file(yaml_path):
                         # Add description if present
                         description_text = props.get("description", "")
                         if description_text:
-                            desc_para = Paragraph(description_text, mini_card_style)
-                            card_content.extend([Spacer(1, 1*mm), desc_para])
+                            description_paragraphs = markdown_to_paragraphs(description_text, mini_card_style)
+                            card_content.extend([Spacer(1, 1*mm)])
+                            card_content.extend(description_paragraphs)
                         
-                        # Add positive effect if present (red/bold for color, bold for B&W)
+                        # Add positive effect if present - red color
                         positive_text = props.get("positive", "")
                         if positive_text:
-                            positive_para = Paragraph(f'<b>[+] {positive_text}</b>', mini_card_style)
+                            positive_para = Paragraph(f'{positive_text}', positive_style)
                             card_content.extend([Spacer(1, 1*mm), positive_para])
                         
-                        # Add negative effect if present (green/italic for color, italic for B&W) 
+                        # Add negative effect if present - green color
                         negative_text = props.get("negative", "")
                         if negative_text:
-                            negative_para = Paragraph(f'<i>[-] {negative_text}</i>', mini_card_style)
+                            negative_para = Paragraph(f'{negative_text}', negative_style)
                             card_content.extend([Spacer(1, 1*mm), negative_para])
                         
                         # Stack all content vertically
@@ -234,17 +250,21 @@ def process_yaml_file(yaml_path):
                     
                     mini_card_data.append(card_cells)
                     
-                    # Create table for this row of mini cards - B&W optimized
-                    mini_table = Table(mini_card_data)
+                    # Create table for this row of mini cards - improved styling
+                    mini_table = Table(mini_card_data, colWidths=[45*mm, 45*mm, 45*mm, 45*mm])
                     mini_table.setStyle(TableStyle([
                         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                        ('LEFTPADDING', (0, 0), (-1, -1), 3),
-                        ('RIGHTPADDING', (0, 0), (-1, -1), 3),
-                        ('TOPPADDING', (0, 0), (-1, -1), 3),
-                        ('BOTTOMPADDING', (0, 0), (-1, -1), 3),
-                        ('GRID', (0, 0), (-1, -1), 0.5, colors.black),
-                        ('BACKGROUND', (0, 0), (-1, -1), colors.white),
+                        ('LEFTPADDING', (0, 0), (-1, -1), 5),
+                        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
+                        ('TOPPADDING', (0, 0), (-1, -1), 5),
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+                        ('BACKGROUND', (0, 0), (-1, -1), colors.lightgrey),
+                        # Add white spacing between cards
+                        ('LINEBELOW', (0, 0), (-1, -1), 2, colors.white),
+                        ('LINEAFTER', (0, 0), (-1, -1), 2, colors.white),
+                        ('LINEBEFORE', (0, 0), (-1, -1), 2, colors.white),
+                        ('LINEABOVE', (0, 0), (-1, -1), 2, colors.white),
                     ]))
                     
                     # Keep each row of mini cards together
