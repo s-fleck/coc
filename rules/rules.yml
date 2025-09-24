@@ -1,0 +1,137 @@
+"Firearm Actions":
+  fire_weapon:
+    icon: "icon.png"
+    skill: "Firearms (Weapon)"
+    description: >
+      A single shot attack with your drawn firearm. Success in using the weapon depends on a
+      player's skill in the weapon type (Handgun, Rifle, Shotgun, Bow, Heavy Weapons, Flamethrower,
+      Machine Gun and SMG). Check weapon description for damage. An extreme success for all firearms
+      except flamethrowers will result in an impaling strike.
+    cost: 1 Combat Action
+
+  quick_fire:
+    icon: "icon.png"
+    skill: "Firearms (Weapon)"
+    description: >
+      FIREARMS ONLY. When a combat round starts, state you plan to fire as your first action and
+      add 50 points to your initiative score (DEX). Your only action this round is to fire your
+      weapon; if you move, brawl, take damage or use an evasive action before firing you lose your
+      Initiative bonus. You may dodge, counter an attack or take damage as normal once you have
+      made your shot. After that round, initiative order returns to normal unless you perform
+      another quick fire action in the following round.
+    cost: 1 turn
+    gain: "+50 Initiative (DEX) for one round"
+
+  aim_weapon:
+    icon: "icon.png"
+    skill: "Firearms (Weapon)"
+    description: >
+      Spend an entire turn this round to aim your weapon. Upon your next turn, you may roll an
+      additional Bonus die if you spend your first action firing your weapon. If the shooter takes
+      damage or moves before their next turn, the aim bonus is lost.
+    cost: 1 turn
+    gain: "+1 Bonus Die next round"
+
+  point_blank_range:
+    icon: "icon.png"
+    skill: "Firearms (Weapon)"
+    description: >
+      If an opponent is within 1/5th of the shooter's DEX in feet, the shooter gets a bonus die
+      to their attack roll. Any shooter within point blank range of an opponent may be targeted
+      by melee attacks and could be disarmed, however an opponent will not be able to fight back
+      or dodge against firearm attacks.
+    cost: 1 Combat Action
+    gain: "+1 Bonus Die"
+
+  multiple_shot:
+    icon: "icon.png"
+    skill: "Firearms (Handguns)"
+    description: >
+      HANDGUNS OR BURST FIRE WEAPONS ONLY. If your firearm allows multiple shots with a single turn,
+      you may fire up to the max number of bullets listed in the firearm's "Attacks" box in a single
+      round. Each shot taken during this attack must take a penalty die.
+    cost: "1 Combat Action, +1 penalty die for each shot taken"
+
+  fire_automatic:
+    icon: "icon.png"
+    skill: "Firearms (Machine Gun // SMG)"
+    description: >
+      AUTOMATIC WEAPONS ONLY. With an automatic weapon, you can fire up to [X] number of bullets in
+      a single volley, with [X] being your weapon skill divided by 10 and rounded down (minimum of
+      3 bullets per volley). Upon a successful hit, half of bullets (rounded down) fired in a volley
+      hit the target. In an extreme success all bullets hit, plus half rounded down are impaling
+      strikes. Successive volleys can be fired in a single turn, however each successive volley
+      increases the difficulty of the skill check.
+    cost: >
+      1 Combat Action for single volley,
+      1 Turn for multiple volleys,
+      +1 penalty die / difficulty increase for each successive volley in a single turn
+
+"Firearm Actions 2":
+  reload_weapon:
+    icon: "icon.png"
+    description: >
+      Reload your weapon. Each weapon has a different reload speed. It takes one combat action to
+      load 2 shells into any weapon that requires manual loading of individual bullets, such as
+      revolvers and shotguns. Weapons that use magazine clips take 1 combat action to reload a
+      whole clip. It takes two full turns to reload heavy weapon ammunition. You cannot reload
+      during the same action as a sprint.
+    cost: 1 Combat Action
+
+  single_bullet_reload:
+    icon: "icon.png"
+    description: >
+      On weapons with manual reloading, you can load a single shell into the weapon and fire in
+      the same combat round, however that combat action will incur a penalty die.
+    cost: "+1 Penalty die for combat roll"
+
+possible_modifiers:
+  impaling_strike:
+    icon: "icon.png"
+    effect: "Roll Extreme Success with firearm: Full Damage + Damage Roll"
+
+  target_range:
+    icon: "icon.png"
+    effect: >
+      Target distance is x2 to x4 weapon range:
+      Hard difficulty roll // Extreme difficulty roll
+
+  surprise_attack:
+    icon: "icon.png"
+    effect: "+1 Bonus Die"
+
+  target_size:
+    icon: "icon.png"
+    effect: >
+      Target build is -2 // target build is +4:
+      +1 penalty die // +1 bonus die
+
+  sprinting:
+    icon: "icon.png"
+    effect: "Player is sprinting during combat round: +1 Penalty Die on shots"
+
+  fast_moving_target:
+    icon: "icon.png"
+    effect: "Target is sprinting (MOV 8+): +1 Penalty Die on shots"
+
+  target_dive:
+    icon: "icon.png"
+    effect: "Target dives for cover + makes successful dodge roll: +1 Penalty Die on shots"
+
+  in_cover:
+    icon: "icon.png"
+    effect: "Target is in partial / full cover: +1 Penalty Die on shots // unable to hit"
+
+  weapon_malfunction:
+    icon: "icon.png"
+    effect: >
+      Roll 96+ (if skill below 50) or 100 (if skill above 50):
+      Weapon malfunction // other consequence
+
+  target_armour:
+    icon: "icon.png"
+    effect: "Enemy is armoured: Damage taken is reduced by armour"
+
+  fire_into_melee:
+    icon: "icon.png"
+    effect: "Target is engaged in melee combat with an ally: +1 Penalty Die, friendly fire on fumble"
