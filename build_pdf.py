@@ -311,6 +311,10 @@ def process_yaml_file(yaml_path):
                 )
                 
                 # Convert subsection content to list for processing
+                # Skip if subsection content is None or empty
+                if subsection_content is None or not subsection_content:
+                    continue
+                
                 mini_cards = list(subsection_content.items())
                 
                 # Process mini cards in rows of 4

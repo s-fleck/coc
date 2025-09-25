@@ -1,0 +1,63 @@
+"Movement":
+  actions:
+    "Move":
+      icon: "img/movement_move.png"
+      description: |
+        A simple move action. Players can move equal yards to their MOV stat.
+      cost: 1 move action
+
+    "Sprint":
+      icon: "img/movement_sprint.png"
+      description: |
+        Travel up to 5x further than a regular move action in a single turn. Any combat actions made
+        this round either before or following the Sprint must incur a penalty die. If you have a MOV
+        of 8 or more, opponents using firearms against you while sprinting will incur +1 penalty die
+        against you.
+      cost: "1 move action, +1 penalty die"
+      gain: "5x movement distance; opponent penalty +1 if using firearms (MOV 8+ only)"
+
+    "Take Cover":
+      icon: "img/movement_take_cover.png"
+      description: |
+        Position self behind cover, either full or partial. If under partial cover, all ranged firearm
+        attacks made against you will receive a penalty die. In full cover, ranged attacks will be
+        unable to hit; however you will automatically enter partial cover or become exposed if you move
+        (for example, leaning out of cover to take a shot).
+      cost: 1 move action
+      gain: "+1 penalty die on opponent's attack // firearms immunity (when fully covered)"
+
+    "Perform Action":
+      icon: "img/movement_perform_action.png"
+      description: |
+        Using your combat action, perform any non-combat action (e.g. apply first aid, lockpick a door,
+        climb to a vantage point). Depending on the action you wish to take, the keeper may ask you to
+        roll a specific skill.
+      cost: 1 combat action
+
+    "Assist Action":
+      icon: "img/movement_assist_action.png"
+      description: |
+        Offer another player help during your turn this round so they can perform an action (e.g.
+        handing medical equipment during first aid, distracting enemies, giving a lift during a climb).
+        Grants the assisted player an additional bonus die for their roll.
+      cost: 1 combat action
+      gain: "+1 bonus die for assisted player"
+
+    "Hold Action":
+      icon: "img/movement_hold_action.png"
+      description: |
+        Spend both your movement and combat action holding your turn — effectively not acting this
+        round. Depending on how you describe holding your action, you may be granted a bonus die for
+        your next turn (e.g. holding to anticipate an attack may grant a bonus to dodge or fight back).
+        The GM may require additional skill rolls if the reasoning for holding your action warrants it.
+      cost: 1 turn
+      gain: "+1 bonus die next turn (if GM agrees upon player's reasoning)"
+
+    "Flee":
+      icon: "img/movement_flee.png"
+      description: |
+        Spend both your movement and combat action disengaging and fleeing the combat area. It takes
+        one full round to successfully flee; even after announcing intent, enemies may still attempt
+        to attack or stop you until your next turn. If you successfully flee a scene, a chase sequence
+        may follow.
+      cost: 1 turn
