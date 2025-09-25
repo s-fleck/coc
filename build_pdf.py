@@ -16,6 +16,146 @@ from reportlab.lib.utils import ImageReader
 from PIL import Image
 import os
 
+# Register Unicode-compatible font for emoji support
+def register_unicode_fonts():
+    """Register Unicode-compatible fonts that support emojis from embedded font files"""
+    import os
+    import zipfile
+    
+    fonts_dir = os.path.join(os.path.dirname(__file__), 'fonts')
+    
+    # Auto-extract Noto fonts from zip if available and fonts not already extracted
+    noto_zip = os.path.join(fonts_dir, 'Noto_Sans.zip')
+    if os.path.exists(noto_zip):
+        noto_files = ['NotoSans-Regular.ttf', 'NotoSans-Bold.ttf', 'NotoSans-Italic.ttf']
+        if not all(os.path.exists(os.path.join(fonts_dir, f)) for f in noto_files[:3]):  # Check first 3
+            try:
+                with zipfile.ZipFile(noto_zip, 'r') as zip_ref:
+                    all_files = zip_ref.namelist()
+                    
+                    # Map target names to possible paths in zip
+                    font_mapping = {
+                        'NotoSans-Regular.ttf': ['static/NotoSans-Regular.ttf', 'NotoSans-Regular.ttf'],
+                        'NotoSans-Bold.ttf': ['static/NotoSans-Bold.ttf', 'NotoSans-Bold.ttf'],
+                        'NotoSans-Italic.ttf': ['static/NotoSans-Italic.ttf', 'NotoSans-Italic.ttf'],
+                        'NotoSans-BoldItalic.ttf': ['static/NotoSans-BoldItalic.ttf', 'NotoSans-BoldItalic.ttf']
+                    }
+                    
+                    extracted = 0
+                    for target_name, possible_paths in font_mapping.items():
+                        target_file = os.path.join(fonts_dir, target_name)
+                        if os.path.exists(target_file):
+                            continue  # Already exists
+                            
+                        for possible_path in possible_paths:
+                            if possible_path in all_files:
+                                zip_ref.extract(possible_path, fonts_dir)
+                                extracted_path = os.path.join(fonts_dir, possible_path)
+                                if extracted_path != target_file:
+                                    os.rename(extracted_path, target_file)
+                                extracted += 1
+                                break
+                    
+                    # Clean up extracted subdirectories
+                    for subdir in ['static', 'Noto_Sans']:
+                        subdir_path = os.path.join(fonts_dir, subdir)
+                        if os.path.exists(subdir_path) and os.path.isdir(subdir_path):
+                            try:
+                                os.rmdir(subdir_path)
+                            except OSError:
+                                pass
+                    
+                    if extracted > 0:
+                        print(f"📦 Auto-extracted {extracted} Noto Sans fonts from zip")
+                        
+            except Exception as e:
+                print(f"Warning: Could not extract fonts from zip: {e}")
+    
+    # Register Noto Emoji font for emoji support (but not as primary font)
+    emoji_registered = False
+    noto_emoji_variable = os.path.join(fonts_dir, 'NotoEmoji-VariableFont_wght.ttf')
+    if os.path.exists(noto_emoji_variable):
+        try:
+            pdfmetrics.registerFont(TTFont('NotoEmoji', noto_emoji_variable))
+            print("🎉 Registered Noto Emoji Variable Font for emoji support")
+            emoji_registered = True
+        except Exception as e:
+            print(f"Warning: Could not register Noto Emoji font: {e}")
+    
+    # Try to register Windows emoji font as additional fallback
+    if not emoji_registered:
+        try:
+            import platform
+            if platform.system() == "Windows":
+                emoji_fonts = [
+                    ('C:/Windows/Fonts/seguiemj.ttf', 'SegoeEmoji'),
+                    ('C:/Windows/Fonts/NotoColorEmoji.ttf', 'NotoColorEmoji'),
+                ]
+                
+                for font_path, font_name in emoji_fonts:
+                    if os.path.exists(font_path):
+                        pdfmetrics.registerFont(TTFont(font_name, font_path))
+                        print(f"✅ Registered {font_name} for emoji support")
+                        emoji_registered = True
+                        break
+        except Exception as e:
+            print(f"Warning: Could not register system emoji font: {e}")
+    
+    try:
+        # Try to register Noto Sans fonts as PRIMARY font (for regular text)
+        noto_regular = os.path.join(fonts_dir, 'NotoSans-Regular.ttf')
+        noto_bold = os.path.join(fonts_dir, 'NotoSans-Bold.ttf')
+        noto_italic = os.path.join(fonts_dir, 'NotoSans-Italic.ttf')
+        noto_bold_italic = os.path.join(fonts_dir, 'NotoSans-BoldItalic.ttf')
+        
+        if all(os.path.exists(f) for f in [noto_regular, noto_bold, noto_italic]):
+            pdfmetrics.registerFont(TTFont('NotoSans', noto_regular))
+            pdfmetrics.registerFont(TTFont('NotoSans-Bold', noto_bold))
+            pdfmetrics.registerFont(TTFont('NotoSans-Italic', noto_italic))
+            if os.path.exists(noto_bold_italic):
+                pdfmetrics.registerFont(TTFont('NotoSans-BoldItalic', noto_bold_italic))
+            else:
+                pdfmetrics.registerFont(TTFont('NotoSans-BoldItalic', noto_bold))  # fallback
+            
+            # Register the font family
+            from reportlab.pdfbase.pdfmetrics import registerFontFamily
+            registerFontFamily('NotoSans',normal='NotoSans',bold='NotoSans-Bold',italic='NotoSans-Italic',boldItalic='NotoSans-BoldItalic')
+            
+            emoji_status = "with full emoji support" if emoji_registered else "(limited emoji - add NotoEmoji-VariableFont_wght.ttf for emoji support)"
+            print(f"✅ Using Noto Sans fonts for text {emoji_status}")
+            return 'NotoSans'
+            
+    except Exception as e:
+        print(f"Warning: Could not load Noto Sans fonts: {e}")
+    
+    try:
+        # Fallback: Try Windows system fonts with emoji font
+        import platform
+        if platform.system() == "Windows":
+            pdfmetrics.registerFont(TTFont('SegoeUI', 'C:/Windows/Fonts/segoeui.ttf'))
+            pdfmetrics.registerFont(TTFont('SegoeUI-Bold', 'C:/Windows/Fonts/segoeuib.ttf'))
+            pdfmetrics.registerFont(TTFont('SegoeUI-Italic', 'C:/Windows/Fonts/segoeuii.ttf'))
+            
+            from reportlab.pdfbase.pdfmetrics import registerFontFamily
+            registerFontFamily('SegoeUI',normal='SegoeUI',bold='SegoeUI-Bold',italic='SegoeUI-Italic',boldItalic='SegoeUI-Bold')
+            
+            emoji_status = "with emoji support" if emoji_registered else "(limited emoji support)"
+            print(f"ℹ️ Using system Segoe UI fonts {emoji_status}")
+            return 'SegoeUI'
+    except:
+        pass
+    
+    # Final fallback: Helvetica
+    print("⚠️ Using Helvetica font (no emoji support). Add Noto fonts to fonts/ directory for full Unicode/emoji support.")
+    return 'Helvetica'
+
+# Initialize Unicode font
+UNICODE_FONT = register_unicode_fonts()
+UNICODE_FONT_BOLD = UNICODE_FONT + '-Bold' if UNICODE_FONT != 'Helvetica' else 'Helvetica-Bold'
+UNICODE_FONT_OBLIQUE = (UNICODE_FONT + '-Italic' if UNICODE_FONT in ['NotoSans', 'SegoeUI'] 
+                       else (UNICODE_FONT + '-Oblique' if UNICODE_FONT == 'DejaVuSans' 
+                            else 'Helvetica-Oblique'))
+
 def load_color_config():
     """Load color configuration from config.yml"""
     try:
@@ -97,10 +237,43 @@ class LineSeparator(Flowable):
         self.canv.setLineWidth(0.5)
         self.canv.line(0, self.height/2, self.width, self.height/2)
 
+def process_emojis_in_text(text):
+    """Process text to wrap emojis in font tags for proper rendering"""
+    import re
+    
+    # Check if emoji font is available
+    emoji_font = None
+    try:
+        from reportlab.pdfbase.pdfmetrics import getFont
+        if 'NotoEmoji' in [f.fontName for f in pdfmetrics._fonts.values()]:
+            emoji_font = 'NotoEmoji'
+        elif 'SegoeEmoji' in [f.fontName for f in pdfmetrics._fonts.values()]:
+            emoji_font = 'SegoeEmoji'
+        elif 'NotoColorEmoji' in [f.fontName for f in pdfmetrics._fonts.values()]:
+            emoji_font = 'NotoColorEmoji'
+    except:
+        pass
+    
+    if not emoji_font:
+        return text  # No emoji font available, return as-is
+    
+    # Regex pattern to match emoji characters
+    # This covers most common emoji ranges
+    emoji_pattern = r'[\U0001F600-\U0001F64F\U0001F300-\U0001F5FF\U0001F680-\U0001F6FF\U0001F1E0-\U0001F1FF\U00002600-\U000027BF\U0001F900-\U0001F9FF\U0001F200-\U0001F2FF\U0001F000-\U0001F0FF\U00002700-\U000027BF\U0001F780-\U0001F7FF\U0001F800-\U0001F8FF\U00002B00-\U00002BFF]+'
+    
+    def replace_emoji(match):
+        emoji = match.group(0)
+        return f'<font name="{emoji_font}">{emoji}</font>'
+    
+    return re.sub(emoji_pattern, replace_emoji, text)
+
 def markdown_to_paragraphs(md_text, style):
-    """Convert markdown text to reportlab paragraphs"""
+    """Convert markdown text to reportlab paragraphs with emoji support"""
     if not md_text:
         return []
+    
+    # First process emojis
+    md_text = process_emojis_in_text(md_text)
     
     # First, handle double newlines in the raw text before markdown processing
     # This is important for literal block scalars (|) in YAML
@@ -154,9 +327,12 @@ def markdown_to_paragraphs(md_text, style):
     return paragraphs if paragraphs else [Paragraph(text, style)]
 
 def markdown_to_text(md_text):
-    """Convert markdown text to reportlab-compatible text (for single line properties)"""
+    """Convert markdown text to reportlab-compatible text (for single line properties) with emoji support"""
     if not md_text:
         return ""
+    
+    # First process emojis
+    md_text = process_emojis_in_text(md_text)
     
     # Convert markdown to HTML
     html = markdown.markdown(str(md_text).strip())
@@ -212,7 +388,7 @@ def process_yaml_file(yaml_path):
         spaceAfter=3,
         textColor=colors_config['card_header_text'],
         leftIndent=0,
-        fontName='Helvetica-Bold'
+        fontName=UNICODE_FONT_BOLD
     )
     
     # Enhanced style for modifiers section header
@@ -235,7 +411,7 @@ def process_yaml_file(yaml_path):
         spaceAfter=0,
         textColor=colors_config['skill_header_text'],
         leftIndent=0,
-        fontName='Helvetica-Oblique'
+        fontName=UNICODE_FONT_OBLIQUE
     )
     
     description_style = ParagraphStyle(
@@ -246,7 +422,7 @@ def process_yaml_file(yaml_path):
         alignment=TA_JUSTIFY,
         leftIndent=0,
         rightIndent=0,
-        fontName='Helvetica',
+        fontName=UNICODE_FONT,
         textColor=colors_config['description_text']
     )
     
@@ -255,11 +431,11 @@ def process_yaml_file(yaml_path):
         parent=styles['Normal'],
         fontSize=8,
         alignment=TA_LEFT,
-        fontName='Helvetica',
+        fontName=UNICODE_FONT,
         textColor=colors_config['table_cell_text']
     )
 
-    doc = SimpleDocTemplate(pdf_name, pagesize=A4, topMargin=20*mm, bottomMargin=20*mm)
+    doc = SimpleDocTemplate(pdf_name, pagesize=A4, topMargin=10*mm, bottomMargin=10*mm) # leftMargin=10*mm, rightMargin=10*mm
     elements = []
 
     # ---------- Build Info Cards ----------
@@ -283,7 +459,7 @@ def process_yaml_file(yaml_path):
                     fontSize=7,
                     alignment=TA_CENTER,
                     spaceAfter=2,
-                    fontName='Helvetica'
+                    fontName=UNICODE_FONT
                 )
 
                 mini_card_header_style = ParagraphStyle(
@@ -292,7 +468,7 @@ def process_yaml_file(yaml_path):
                     fontSize=12,
                     alignment=TA_CENTER,
                     spaceAfter=2,
-                    fontName='Helvetica'
+                    fontName=UNICODE_FONT
                 )
                 
                 # Create colored styles for positive/negative effects
@@ -300,14 +476,14 @@ def process_yaml_file(yaml_path):
                     'PositiveEffect',
                     parent=mini_card_style,
                     textColor=colors_config['positive_effect'],
-                    fontName='Helvetica-Bold'
+                    fontName=UNICODE_FONT_BOLD
                 )
                 
                 negative_style = ParagraphStyle(
                     'NegativeEffect', 
                     parent=mini_card_style,
                     textColor=colors_config['negative_effect'],
-                    fontName='Helvetica-Bold'
+                    fontName=UNICODE_FONT_BOLD
                 )
                 
                 # Convert subsection content to list for processing
@@ -438,7 +614,7 @@ def process_yaml_file(yaml_path):
                         # Create a table with title on left and skill on right
                         # Calculate width to match the available content width
                         # Available width = page width - margins - icon width - paddings
-                        available_width = (A4[0] - 40*mm - 20*mm - 5*mm - 8*mm)  # page - margins - icon - left/right padding
+                        available_width = (A4[0] - 20*mm - 20*mm - 5*mm - 8*mm)  # page - margins - icon - left/right padding
                         skill_formatted = markdown_to_text(skill_text)
                         header_data = [[
                             Paragraph(f"<b>{header_title}</b>", card_header_style),
@@ -491,7 +667,7 @@ def process_yaml_file(yaml_path):
                         info_table.setStyle(TableStyle([
                             ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
                             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                            ('FONTNAME', (0, 0), (-1, -1), UNICODE_FONT),
                             ('FONTSIZE', (0, 0), (-1, -1), 8),
                             ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
                             ('TOPPADDING', (0, 0), (-1, -1), 2),

@@ -1,64 +1,82 @@
 "Evasion":
   actions:
-    "Dodge Melee":
-      icon: "img/evasive_dodge_melee.png"
+    "Dodge (Melee)":
+      icon: "img/evasion_dodge.png"
       skill: "Dodge"
       description: |
-        ✊**Melee attacks only.** Opposed Dodge vs attacker's Fighting. Ties favor defender.
+        Against **melee** only. Opposed `Dodge` vs attacker's `Fighting`. Ties favor defender.
       cost: 1 evasive action
 
-    "Fight Back":
-      icon: "img/evasive_fight_back.png"
+    "Fight Back (Melee)":
+      icon: "img/evasion_fight_back.png"
       skill: "Fighting (Brawl // Weapon)"
       description: |
-        👊Against **melee attacks only.** Opposed `fighting` skill check vs attacker. Ties favor attacker. No critical/impaling on extreme success during a fight back maneuver.
+        Against **melee** only. Opposed `fighting` skill check vs attacker. Ties favor attacker. 
+
+        No critical/impaling on extreme success during a fight back maneuver.
       cost: 1 evasive action
 
-    "Dive for Cover":
-      icon: "img/evasive_dive_for_cover.png"
+    "Dive for Cover (Ranged)":
+      icon: "img/evasion_dive.png"
       skill: "Dodge"
       description: |
-        🔫Against **firearms only.** Declare that you wish to dive for cover before attacker rolls. Make a dodge check; on success attacker incurs 1 penalty die.
-        You may dive in any direction for up to `1/5 DEX` feet. Lose your next combat round.
-      cost: "1 evasive action, lose your next combat round"
-      gain: "Attacker receives +1 penalty die"
+        Against **ranged weapons** only, Declare before attacker rolls. 
+        Make a `dodge` check; on success attacker incurs +1 penalty 🎲.
+        Dive in any direction for up to `1/5 DEX` feet. Lose your next combat round.
+      cost: "1 evasive action, lose your next round"
+      gain: "Attacker receives +1 penalty 🎲"
 
   modifiers:
     "Sprinting":
       icon: "img/mod_sprinting.png"
-      description: "Target sprinting (`MOV 8+`)"
-      negative: "+1 penalty die on attacker's roll"
+      description: |
+        🏹 only
+
+        Target sprinting (`MOV 8+`)
+      negative: "+1 penalty 🎲 on attacker's roll"
 
     "Player Size":
-      icon: "img/mod_player_size.png"
-      description: "Player build `≤2` or `≥4`"
-      positive: "+1 bonus die (small target)"
-      negative: "+1 penalty die (large target)"
+      icon: "img/mod_target_size.png"
+      description: |
+        🏹 only
+
+        Player build `≤2` or `≥4`
+      positive: "+1 bonus 🎲 (small target)"
+      negative: "+1 penalty 🎲 (large target)"
 
     "Attacker Range":
-      icon: "img/mod_attacker_range.png"
-      description: "Distance `≥2×` or `≥4×` weapon range"
-      negative: "Hard roll // Extreme roll"
+      icon: "img/mod_range.png"
+      description: |
+        🏹 only
 
-    "Player Armour":
-      icon: "img/mod_player_armour.png"
-      description: "Player wearing armor"
-      negative: "Damage reduced by armor value"
+        Distance `≥2×` or `≥4×` weapon range
+      negative: "Hard roll // Extreme roll"
 
     "Fire into Melee":
       icon: "img/mod_fire_into_melee.png"
-      description: "Target engaged in melee with ally"
-      negative: "+1 penalty die, friendly fire on fumble"
+      description: |
+        🏹 only
+
+        Target engaged in melee with ally
+      negative: "+1 penalty 🎲, friendly fire on fumble"
+
+    "Player Armour":
+      icon: "img/mod_armour.png"
+      description: "Player wearing armor"
+      negative: "Damage reduced by armor value"
 
     "Overwhelmed":
       icon: "img/mod_overwhelmed.png"
-      description: "Multiple attacks in same round"
-      negative: "+1 penalty die on evasive actions"
+      description: |
+        ⚔️ only
+
+        Multiple attacks in same round
+      negative: "+1 penalty 🎲 on evasive actions"
 
     "Surprise Attack":
       icon: "img/mod_surprise_attack.png"
       description: "Target unaware of attack"
-      positive: "Auto-success OR +1 bonus die"
+      positive: "Auto-success OR +1 bonus 🎲"
 
     "Impaling Strike":
       icon: "img/mod_impaling_strike.png"
@@ -66,6 +84,6 @@
       positive: "Full damage + DB + damage roll"
 
     "Action Fumble":
-      icon: "img/mod_action_fumble.png"
+      icon: "img/mod_fumble.png"
       description: "Roll `96+` (skill `<50`) or `100` (skill `≥50`)"
       negative: "Failure with unintended consequences"

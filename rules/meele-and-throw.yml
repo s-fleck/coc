@@ -18,7 +18,7 @@
       cost: 1 combat action
 
     "Fighting Maneuver":
-      icon: "img/melee_fighting_maneuver.png"
+      icon: "img/melee_maneuver.png"
       skill: "Fighting (Brawl)"
       description: |
         Non-damaging combat action (disarms, pushes, knock-outs, etc). Compare attacker and defender 
@@ -60,11 +60,11 @@
       positive: "Automatic success OR +1 bonus die"
 
     "Weapon Fumble":
-      icon: "img/mod_weapon_fumble.png"
-      description: "Roll 96+ (skill < 50) or 100 (skill ≥ 50)"
+      icon: "img/mod_fumble.png"
+      description: "Roll `96+` (skill `< 50`) or 100 (skill `≥ 50`)"
       negative: "Failure with unintended consequences"
 
     "Target Armour":
-      icon: "img/mod_target_armour.png"
+      icon: "img/mod_armour.png"
       description: "Enemy is armoured"
       negative: "Damage reduced by armour"
