@@ -43,27 +43,6 @@ course of 2025/2026 as I started this project specificaly to support a campaign 
    python build_pdf.py
    ```
 
-**Recommended**: Download [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans) fonts for best emoji support.
-
-## 🚀 GitHub Pages Setup
-
-The project includes automatic deployment to GitHub Pages:
-
-1. **Enable GitHub Pages** in your repository settings:
-   - Go to Settings → Pages
-   - Source: GitHub Actions
-2. **Push changes** to trigger deployment:
-
-   ```bash
-   git add .
-   git commit -m "Add GitHub Pages setup"
-   git push
-   ```
-
-3. **Access your site**: `https://username.github.io/repository-name/`
-
-PDFs are automatically regenerated and deployed when you modify YAML files or the build script.
-
 ## File Structure
 
 ```
