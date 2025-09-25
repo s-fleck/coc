@@ -18,6 +18,7 @@
       icon: "img/movements_take_cover.png"
       description: |
         Move behind partial or full cover. 
+
         - **Partial:** firearms vs you get +1 penalty 🎲. 
         - **Full:** immunity to ranged attacks (until you move/lean out).
       cost: 1 move action

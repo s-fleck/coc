@@ -22,9 +22,10 @@
       icon: "img/melee_maneuver.png"
       skill: "Fighting (Brawl)"
       description: |
-        Non-damaging action (*disarm, push, knockout...*). 🤼‍♂️
+        Non-damaging action (*disarm, push, knockout...*).
 
         Compare builds:
+
         - **Defender +1:** Attacker gets +1 penalty 🎲
         - **Defender +2:** Attacker gets +2 penalty 🎲  
         - **Defender +3+:** Impossible
@@ -46,7 +47,7 @@
       icon: "img/melee_throw.png"
       skill: "Throw"
       description: |
-        Throw object up to `1/5 STR` yards. 🎯💨
+        Throw object up to `1/5 STR` yards.
 
         - **Hard roll** to throw `×2` distance. 
         - **Extreme roll:** to throw `×4` distance.
