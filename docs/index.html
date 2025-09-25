@@ -3,6 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Call of Cthulhu Cheat Sheets</title>
     <style>
       body {
@@ -139,9 +145,19 @@
     </div>
 
     <script>
-      // Display last updated date
+      // Display last updated date and add cache-busting to PDF links
+      const now = new Date();
       document.getElementById("lastUpdated").textContent =
-        new Date().toLocaleDateString();
+        now.toLocaleDateString();
+
+      // Add timestamp to all PDF links to prevent caching
+      const timestamp = Date.now();
+      const pdfLinks = document.querySelectorAll('a[href$=".pdf"]');
+      pdfLinks.forEach((link) => {
+        const url = new URL(link.href);
+        url.searchParams.set("v", timestamp);
+        link.href = url.toString();
+      });
     </script>
   </body>
 </html>

@@ -39,14 +39,32 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml reportlab markdown pillow
 
+      - name: Verify fonts and setup
+        run: |
+          # Check if fonts directory exists and list contents
+          ls -la fonts/
+          # Check if rules directory exists
+          ls -la rules/
+
       - name: Generate PDFs
         run: |
+          # Clean any existing output directory
+          rm -rf output/
+          # Generate fresh PDFs
           python build_pdf.py
+          # Debug: Show what PDFs were generated
+          ls -la output/
 
       - name: Copy PDFs to docs directory
         run: |
-          mkdir -p docs
-          cp output/*.pdf docs/
+          # Force copy fresh PDFs to docs directory (overwrite any existing)
+          cp -f output/*.pdf docs/
+          # List files to verify with timestamps
+          ls -la docs/
+          # Show PDF file sizes and timestamps
+          stat docs/*.pdf
+          # Verify PDF file sizes are reasonable (not 0 bytes)
+          find docs/ -name "*.pdf" -size 0 | wc -l | grep -q "^0$" && echo "All PDFs have content" || echo "WARNING: Some PDFs are empty!"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
