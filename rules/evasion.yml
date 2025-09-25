@@ -4,58 +4,46 @@
       icon: "img/evasive_dodge_melee.png"
       skill: "Dodge"
       description: |
-        MELEE ATTACKS ONLY. Dodge an attacker's melee attack or combat maneuver using an opposed 
-        dodge skill check. A defender's dodge check is an opposed skill roll to the attacker's fighting 
-        skill check, so it may still be possible to fail a successful dodge if the attacker rolls a higher 
-        success. In the case of a skill check draw, the success goes to the defender. If both fail their 
-        skill checks, no damage is inflicted.
+        ✊**Melee attacks only.** Opposed Dodge vs attacker's Fighting. Ties favor defender.
       cost: 1 evasive action
 
     "Fight Back":
       icon: "img/evasive_fight_back.png"
       skill: "Fighting (Brawl // Weapon)"
       description: |
-        MELEE ATTACKS ONLY. Fight back an attacker's melee attack or combat maneuver using an opposed 
-        Fighting skill check. A defender's fighting check is an opposed skill roll to the attacker's fighting 
-        skill check, so it may still be possible to fail a successful fight back if the attacker rolls a 
-        higher success. In the case of a skill check draw, the success goes to your attacker. If both fail 
-        their skill checks, you're both at an impasse. Critical/impaling strikes do not occur on extreme 
-        successes during a fight back.
+        👊Against **melee attacks only.** Opposed `fighting` skill check vs attacker. Ties favor attacker. No critical/impaling on extreme success during a fight back maneuver.
       cost: 1 evasive action
 
     "Dive for Cover":
       icon: "img/evasive_dive_for_cover.png"
       skill: "Dodge"
       description: |
-        FIREARM ATTACKS ONLY. If you are aware they are about to be shot at, you may state before the 
-        attacker rolls their firearms check that you wish to dive for cover. Make a Dodge check; if 
-        successful, your attacker receives a penalty die during their attack. You may dive in any direction 
-        up to 1/5th of your DEX in feet. Diving for cover causes you to automatically lose your next combat 
-        round.
-      cost: "1 evasive action, next combat round"
+        🔫Against **firearms only.** Declare that you wish to dive for cover before attacker rolls. Make a dodge check; on success attacker incurs 1 penalty die.
+        You may dive in any direction for up to `1/5 DEX` feet. Lose your next combat round.
+      cost: "1 evasive action, lose your next combat round"
       gain: "Attacker receives +1 penalty die"
 
   modifiers:
     "Sprinting":
       icon: "img/mod_sprinting.png"
-      description: "Target is sprinting (MOV 8+)"
+      description: "Target sprinting (`MOV 8+`)"
       negative: "+1 penalty die on attacker's roll"
 
     "Player Size":
       icon: "img/mod_player_size.png"
-      description: "Player build ≤ 2 // Player build ≥ 4"
-      positive: "+1 bonus die"
-      negative: "+1 penalty die"
+      description: "Player build `≤2` or `≥4`"
+      positive: "+1 bonus die (small target)"
+      negative: "+1 penalty die (large target)"
 
     "Attacker Range":
       icon: "img/mod_attacker_range.png"
-      description: "Distance ≥ 2x or 4x attacker's weapon range"
+      description: "Distance `≥2×` or `≥4×` weapon range"
       negative: "Hard roll // Extreme roll"
 
     "Player Armour":
       icon: "img/mod_player_armour.png"
-      description: "Player is wearing armour"
-      negative: "Damage reduced by armour"
+      description: "Player wearing armor"
+      negative: "Damage reduced by armor value"
 
     "Fire into Melee":
       icon: "img/mod_fire_into_melee.png"
@@ -64,13 +52,13 @@
 
     "Overwhelmed":
       icon: "img/mod_overwhelmed.png"
-      description: "Attacked more than once in same round"
+      description: "Multiple attacks in same round"
       negative: "+1 penalty die on evasive actions"
 
     "Surprise Attack":
       icon: "img/mod_surprise_attack.png"
       description: "Target unaware of attack"
-      positive: "Automatic success OR +1 bonus die"
+      positive: "Auto-success OR +1 bonus die"
 
     "Impaling Strike":
       icon: "img/mod_impaling_strike.png"
@@ -79,5 +67,5 @@
 
     "Action Fumble":
       icon: "img/mod_action_fumble.png"
-      description: "Roll 96+ (skill < 50) or 100 (skill ≥ 50)"
+      description: "Roll `96+` (skill `<50`) or `100` (skill `≥50`)"
       negative: "Failure with unintended consequences"

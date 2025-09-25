@@ -404,23 +404,25 @@ def process_yaml_file(yaml_path):
                     description_text = props.get("description", "")
                     description_paragraphs = markdown_to_paragraphs(description_text, description_style)
                     
-                    # Create cost/gain table data
+                    # Create cost/gain table data - combine cost and gain in same row to save space
                     table_data = []
                     
-                    # Add cost if present
-                    if props.get("cost"):
-                        cost_formatted = markdown_to_text(props.get("cost"))
-                        table_data.append(["Cost:", cost_formatted])
+                    # Get formatted values
+                    cost_text = markdown_to_text(props.get("cost", "")) if props.get("cost") else None
+                    gain_text = markdown_to_text(props.get("gain", "")) if props.get("gain") else None
+                    effect_text = markdown_to_text(props.get("effect", "")) if props.get("effect") else None
                     
-                    # Add gain if present  
-                    if props.get("gain"):
-                        gain_formatted = markdown_to_text(props.get("gain"))
-                        table_data.append(["Gain:", gain_formatted])
+                    # Add cost/gain in same row if both present
+                    if cost_text and gain_text:
+                        table_data.append(["Cost:", cost_text, "Gain:", gain_text])
+                    elif cost_text:
+                        table_data.append(["Cost:", cost_text])
+                    elif gain_text:
+                        table_data.append(["Gain:", gain_text])
                         
-                    # Add effect if present
-                    if props.get("effect"):
-                        effect_formatted = markdown_to_text(props.get("effect"))
-                        table_data.append(["Effect:", effect_formatted])
+                    # Add effect if present (always on separate row)
+                    if effect_text:
+                        table_data.append(["Effect:", effect_text])
                     
                     # Build the card content - compact layout with heading and description next to icon
                     card_elements = []
@@ -461,7 +463,49 @@ def process_yaml_file(yaml_path):
                     for para in description_paragraphs:
                         content_elements.append(para)
                     
-                    # Create a table with icon on left and all content (header + description) on right
+                    # Add cost/gain table to content if there's data
+                    if table_data:
+                        # Convert table data to paragraphs - handle both 2-column and 4-column rows
+                        table_data_formatted = []
+                        col_widths = []
+                        
+                        for row in table_data:
+                            if len(row) == 4:  # Cost and Gain in same row
+                                table_data_formatted.append([
+                                    Paragraph(f"<b>{row[0]}</b>", table_cell_style),  # "Cost:"
+                                    Paragraph(str(row[1]), table_cell_style),         # cost value
+                                    Paragraph(f"<b>{row[2]}</b>", table_cell_style),  # "Gain:"
+                                    Paragraph(str(row[3]), table_cell_style)          # gain value
+                                ])
+                                col_widths = [12*mm, None, 12*mm, None]  # 4 columns - reduced label width
+                            else:  # 2-column row (Effect, or single Cost/Gain)
+                                table_data_formatted.append([
+                                    Paragraph(f"<b>{row[0]}</b>", table_cell_style),
+                                    Paragraph(str(row[1]), table_cell_style)
+                                ])
+                                if not col_widths:  # Set column widths for 2-column layout
+                                    col_widths = [15*mm, None]  # 2 columns - reduced label width
+                        
+                        # Create the info table
+                        info_table = Table(table_data_formatted, colWidths=col_widths)
+                        info_table.setStyle(TableStyle([
+                            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                            ('FONTSIZE', (0, 0), (-1, -1), 8),
+                            ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
+                            ('TOPPADDING', (0, 0), (-1, -1), 2),
+                            ('LEFTPADDING', (0, 0), (-1, -1), 0),  # No left padding since it's inside the main card
+                            ('RIGHTPADDING', (0, 0), (-1, -1), 0),  # No right padding since it's inside the main card
+                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                        ]))
+                        
+                        # Add a small spacer before the table if we have other content
+                        if content_elements:
+                            content_elements.append(Spacer(1, 2*mm))
+                        content_elements.append(info_table)
+                    
+                    # Create a table with icon on left and ALL content (header + description + cost/gain table) on right
                     if content_elements:
                         # Combine all content into a single cell content
                         content_data = [[icon, content_elements]]
@@ -490,32 +534,6 @@ def process_yaml_file(yaml_path):
                             ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
                         ]))
                         card_elements.append(icon_table)
-                    
-                    # Add cost/gain table if there's data - optimized for B&W printing
-                    if table_data:
-                        # Convert table data to paragraphs
-                        table_data_formatted = []
-                        for row in table_data:
-                            table_data_formatted.append([
-                                Paragraph(f"<b>{row[0]}</b>", table_cell_style),
-                                Paragraph(str(row[1]), table_cell_style)
-                            ])
-                        
-                        info_table = Table(table_data_formatted, colWidths=[25*mm, None])
-                        info_table.setStyle(TableStyle([
-                            ('BACKGROUND', (0, 0), (-1, -1), bg_color),
-                            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-                            ('FONTSIZE', (0, 0), (-1, -1), 8),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
-                            ('TOPPADDING', (0, 0), (-1, -1), 2),
-                            ('LEFTPADDING', (0, 0), (-1, -1), 5),
-                            ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                        ]))
-                        
-                        card_elements.append(info_table)
                     
                     # Add each card element directly to the main flow
                     # Wrap the entire card in KeepTogether to prevent page breaks
