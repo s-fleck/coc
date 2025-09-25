@@ -3,7 +3,7 @@
     "Move":
       icon: "img/movements_move.png"
       description: |
-        Move up to **MOV** yards.
+        Move up to `MOV` yards.
       cost: 1 move action
 
     "Sprint":

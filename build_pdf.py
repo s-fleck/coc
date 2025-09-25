@@ -353,9 +353,14 @@ def markdown_to_text(md_text):
 
 # ---------- Process YAML Files ----------
 def process_yaml_file(yaml_path):
+    # Create output directory if it doesn't exist
+    output_dir = "output"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
     # Extract base filename (without extension) for the PDF output
     base_name = os.path.basename(yaml_path)
-    pdf_name = os.path.splitext(base_name)[0] + ".pdf"
+    pdf_name = os.path.join(output_dir, os.path.splitext(base_name)[0] + ".pdf")
 
     print(f"Processing: {yaml_path} → {pdf_name}")
 
