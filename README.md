@@ -1,8 +1,9 @@
 # Call of Cthulhu PDF Cheat Sheets
 
 Generates PDF cheat sheets for Call of Cthulhu RPG from YAML files,
-but probably reusable for other purposes. Based on the visual cheat sheets by /u/Uncle*Bones* from this redit thread:
-https://www.reddit.com/r/callofcthulhu/comments/1aq0v34/visualised_cheat_sheets_for_combat_mechanics_i/
+but probably reusable for other purposes. Based on the visual cheat sheets by `/u/Uncle_Bones_` from this redit thread:
+https://www.reddit.com/r/callofcthulhu/comments/1aq0v34/visualised_cheat_sheets_for_combat_mechanics_i/ . All icons
+were created by `/u/Uncle_Bones_` and are used with permission.
 
 ## 📖 Download PDFs
 
