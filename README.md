@@ -1,14 +1,32 @@
 # Call of Cthulhu PDF Cheat Sheets
 
-Generates professional PDF cheat sheets for Call of Cthulhu RPG from YAML configurations.
+Generates PDF cheat sheets for Call of Cthulhu RPG from YAML files,
+but probably reusable for other purposes. Based on the visual cheat sheets by /u/Uncle*Bones* from this redit thread:
+https://www.reddit.com/r/callofcthulhu/comments/1aq0v34/visualised_cheat_sheets_for_combat_mechanics_i/
+
+## 📖 Download PDFs
+
+Latest cheat sheets built from master branch are available for download at [https://s-fleck.github.io/coc/](https://s-fleck.github.io/coc/)
+
+Available cheat sheets:
+
+- **Movement** 🚶‍♂️ - Movement actions
+- **Evasion** 🤸 - Dodge mechanics and defensive actions
+- **Firearms** 🎯 - Ranged combat actions
+- **Melee & Throw** ⚔️ - Close combat and throwing actions
 
 ## Features
 
 - **Unicode & Emoji Support**: Full support for Unicode characters and emojis 🎲
 - **Configurable Colors**: Customize all colors via `config.yml`
-- **Professional Layout**: Icon-based cards with alternating backgrounds
 - **Markdown Support**: Rich text formatting in descriptions
-- **Multiple Cheat Sheets**: Support for multiple YAML files
+
+## Development status
+
+This is in a proof-of-concept state and the code is 100% AI generated without much human oversight.
+That beeing said, it generates clean-looking printable cheat sheets and supports all envisioned features.
+The cheat sheets will probably be refined and extended for Cthulhu Invictus and Pulp Cthulhu over the
+course of 2025/2026 as I started this project specificaly to support a campaign that uses those rule sets.
 
 ## Quick Start
 
@@ -25,27 +43,39 @@ Generates professional PDF cheat sheets for Call of Cthulhu RPG from YAML config
    python build_pdf.py
    ```
 
-## Font Setup (Optional)
-
-For full emoji support 🎲⚔️🛡️, add Unicode fonts to the `fonts/` directory:
-
-```bash
-cd fonts
-python download_fonts.py  # Check current font status
-```
-
 **Recommended**: Download [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans) fonts for best emoji support.
+
+## 🚀 GitHub Pages Setup
+
+The project includes automatic deployment to GitHub Pages:
+
+1. **Enable GitHub Pages** in your repository settings:
+   - Go to Settings → Pages
+   - Source: GitHub Actions
+2. **Push changes** to trigger deployment:
+
+   ```bash
+   git add .
+   git commit -m "Add GitHub Pages setup"
+   git push
+   ```
+
+3. **Access your site**: `https://username.github.io/repository-name/`
+
+PDFs are automatically regenerated and deployed when you modify YAML files or the build script.
 
 ## File Structure
 
 ```
-├── build_pdf.py          # Main PDF generator
-├── config.yml            # Color configuration
-├── fonts/                # Embedded fonts directory
-│   └── README.md         # Font installation guide
-└── rules/                # YAML cheat sheet definitions
-    ├── firearms.yml
-    ├── evasion.yml
-    ├── movement.yml
-    └── meele-and-throw.yml
+├── .github/
+│   └── workflows/
+│       └── deploy-pdfs.yml   # GitHub Actions workflow
+├── docs/
+│   └── index.html           # GitHub Pages site
+├── output/                  # Generated PDFs (local)
+├── build_pdf.py            # Main PDF generator
+├── config.yml              # Color configuration
+├── fonts/                  # Embedded fonts directory
+│   └── README.md           # Font installation guide
+└── rules/                  # YAML cheat sheet definitions
 ```
