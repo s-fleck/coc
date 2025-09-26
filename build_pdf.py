@@ -439,23 +439,37 @@ def process_yaml_file(yaml_path):
         fontName=UNICODE_FONT,
         textColor=colors_config['table_cell_text']
     )
+    
+    cost_gain_style = ParagraphStyle(
+        'CostGain',
+        parent=styles['Normal'],
+        fontSize=8,
+        alignment=TA_LEFT,
+        fontName=UNICODE_FONT,
+        textColor=colors_config['table_cell_text']
+    )
 
     doc = SimpleDocTemplate(pdf_name, pagesize=A4, topMargin=10*mm, bottomMargin=10*mm) # leftMargin=10*mm, rightMargin=10*mm
     elements = []
 
     # ---------- Build Info Cards ----------
-    for section, content in data.items():
-        # Page header (top level key)
-        elements.append(Paragraph(section.replace("_", " ").title(), page_header_style))
-        elements.append(Spacer(1, 6*mm))
-
-        # Process each subsection (actions, modifiers, etc.)
-        for subsection_name, subsection_content in content.items():
-            if subsection_name.lower() == "modifiers":
+    # Handle new flexible sheet structure
+    if 'sheet' in data and 'sections' in data['sheet']:
+        # New flexible structure: sheet -> sections -> items
+        sections = data['sheet']['sections']
+        
+        for section in sections:
+            section_title = section.get('title', 'Untitled Section')
+            section_type = section.get('type', 'full_card')
+            section_items = section.get('items', [])
+            
+            # Add section header
+            elements.append(Paragraph(section_title, page_header_style))
+            elements.append(Spacer(1, 6*mm))
+            
+            if section_type == "mini_card":
                 # Process as mini cards in a 4-column grid - compact layout
                 elements.append(Spacer(1, 3*mm))
-                elements.append(Paragraph("Modifiers", modifiers_header_style))
-                elements.append(Spacer(1, 2*mm))
                 
                 # Create mini card style - optimized for B&W printing
                 mini_card_style = ParagraphStyle(
@@ -491,248 +505,231 @@ def process_yaml_file(yaml_path):
                     fontName=UNICODE_FONT_BOLD
                 )
                 
-                # Convert subsection content to list for processing
-                # Skip if subsection content is None or empty
-                if subsection_content is None or not subsection_content:
+                # Skip if no items
+                if not section_items:
                     continue
                 
-                mini_cards = list(subsection_content.items())
-                
                 # Process mini cards in rows of 4
-                for i in range(0, len(mini_cards), 4):
-                    row_cards = mini_cards[i:i+4]
+                for i in range(0, len(section_items), 4):
+                    row_cards = section_items[i:i+4]
                     mini_card_data = []
                     
                     # Create the row with up to 4 mini cards
                     card_cells = []
-                    for action_key, props in row_cards:
+                    for item in row_cards:
                         # Create mini card content with heading
-                        icon_path = props.get("icon", "")
+                        icon_path = item.get("icon", "")
                         mini_icon = IconPlaceholder(icon_path, width=15*mm, height=15*mm, colors_config=colors_config)
                         
                         # Add heading for the mini card
-                        heading_text = action_key.replace("_", " ").title()
+                        heading_text = item.get('title', 'Untitled')
                         heading_para = Paragraph(f"<b>{heading_text}</b>", mini_card_header_style)
                         
                         # Create content elements list
                         card_content = [mini_icon, Spacer(1, 1*mm), heading_para]
                         
                         # Add description if present
-                        description_text = props.get("description", "")
+                        description_text = item.get('description', '')
                         if description_text:
-                            description_paragraphs = markdown_to_paragraphs(description_text, mini_card_style)
-                            card_content.extend([Spacer(1, 1*mm)])
-                            card_content.extend(description_paragraphs)
+                            description_formatted = process_emojis_in_text(markdown_to_text(description_text))
+                            description_para = Paragraph(description_formatted, mini_card_style)
+                            card_content.append(description_para)
                         
-                        # Add positive effect if present - red color
-                        positive_text = props.get("positive", "")
-                        negative_text = props.get("negative", "")
-                        
+                        # Add positive effect if present
+                        positive_text = item.get('positive', '')
                         if positive_text:
-                            positive_formatted = markdown_to_text(positive_text)
-                            positive_para = Paragraph(positive_formatted, positive_style)
-                            card_content.extend([Spacer(1, 1*mm), positive_para])
+                            positive_formatted = process_emojis_in_text(markdown_to_text(positive_text))
+                            positive_para = Paragraph(f"✓ {positive_formatted}", positive_style)
+                            card_content.append(positive_para)
                         
-                        # Add negative effect if present - green color with reduced spacing if positive exists
+                        # Add negative effect if present
+                        negative_text = item.get('negative', '')
                         if negative_text:
-                            negative_formatted = markdown_to_text(negative_text)
-                            negative_para = Paragraph(negative_formatted, negative_style)
-                            # Use smaller spacer if positive effect already exists
-                            spacer_size = 0.3*mm if positive_text else 1*mm
-                            card_content.extend([Spacer(1, spacer_size), negative_para])
+                            negative_formatted = process_emojis_in_text(markdown_to_text(negative_text))
+                            negative_para = Paragraph(f"✗ {negative_formatted}", negative_style)
+                            card_content.append(negative_para)
                         
-                        # Stack all content vertically
-                        card_cells.append(card_content)
+                        # Add gain/cost info if present
+                        gain_text = item.get('gain', '')
+                        if gain_text:
+                            gain_formatted = process_emojis_in_text(markdown_to_text(gain_text))
+                            gain_para = Paragraph(f"↗ {gain_formatted}", positive_style)
+                            card_content.append(gain_para)
+                        
+                        # Combine all content into a single cell
+                        combined_content = []
+                        for element in card_content:
+                            combined_content.append(element)
+                        card_cells.append(combined_content)
                     
-                    # Fill empty cells if less than 4 cards in the row
+                    # Fill remaining cells if row has less than 4 cards
                     while len(card_cells) < 4:
                         card_cells.append("")
                     
                     mini_card_data.append(card_cells)
                     
-                    # Create table for this row of mini cards - improved styling
-                    mini_table = Table(mini_card_data, colWidths=[45*mm, 45*mm, 45*mm, 45*mm])
+                    # Create table with mini cards
+                    col_width = (A4[0] - 20*mm) / 4  # Adjust for margins
+                    mini_table = Table(mini_card_data, colWidths=[col_width] * 4)
                     mini_table.setStyle(TableStyle([
-                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ('LEFTPADDING', (0, 0), (-1, -1), 5),
                         ('RIGHTPADDING', (0, 0), (-1, -1), 5),
                         ('TOPPADDING', (0, 0), (-1, -1), 5),
                         ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-                        ('BACKGROUND', (0, 0), (-1, -1), colors_config['modifier_background']),
-                        # Add white spacing between cards
-                        ('LINEBELOW', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
-                        ('LINEAFTER', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
-                        ('LINEBEFORE', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
-                        ('LINEABOVE', (0, 0), (-1, -1), 2, colors_config['modifier_spacing']),
+                        ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                        ('BACKGROUND', (0, 0), (-1, -1), colors_config['card_background_1'])
                     ]))
                     
                     # Keep each row of mini cards together
                     elements.append(KeepTogether([mini_table, Spacer(1, 2*mm)]))
             
-            elif subsection_name.lower() in ["actions", "rules"]:
-                # Process as regular cards (actions, rules, etc.)
+            elif section_type == "full_card":
+                # Process as regular full cards
                 card_counter = 0  # Counter for alternating backgrounds
-                for action_key, props in subsection_content.items():
-                    # Create a regular card for each action
+                for item in section_items:
+                    # Create a regular card for each item
                     card_elements = []
                     
                     # Create icon placeholder
-                    icon_path = props.get("icon", "")
-                    icon = IconPlaceholder(icon_path, colors_config=colors_config)
+                    icon_path = item.get("icon", "")
+                    main_icon = IconPlaceholder(icon_path, width=20*mm, height=20*mm, colors_config=colors_config)
                     
-                    # Description as markdown
-                    description_text = props.get("description", "")
-                    description_paragraphs = markdown_to_paragraphs(description_text, description_style)
-                    
-                    # Create cost/gain table data - combine cost and gain in same row to save space
-                    table_data = []
-                    
-                    # Get formatted values
-                    cost_text = markdown_to_text(props.get("cost", "")) if props.get("cost") else None
-                    gain_text = markdown_to_text(props.get("gain", "")) if props.get("gain") else None
-                    effect_text = markdown_to_text(props.get("effect", "")) if props.get("effect") else None
-                    
-                    # Add cost/gain in same row if both present
-                    if cost_text and gain_text:
-                        table_data.append(["Cost:", cost_text, "Gain:", gain_text])
-                    elif cost_text:
-                        table_data.append(["Cost:", cost_text])
-                    elif gain_text:
-                        table_data.append(["Gain:", gain_text])
-                        
-                    # Add effect if present (always on separate row)
-                    if effect_text:
-                        table_data.append(["Effect:", effect_text])
-                    
-                    # Build the card content - compact layout with heading and description next to icon
-                    card_elements = []
-                    
-                    # Create content to go next to the icon (heading + description)
-                    content_elements = []
-                    
-                    # Add the header (with skill if present)
-                    header_title = action_key.replace("_", " ").title()
-                    skill_text = props.get("skill", "")
+                    # Get item properties
+                    header_title = item.get('title', 'Untitled')
+                    skill_text = item.get('skill', '')
                     
                     if skill_text:
                         # Create a table with title on left and skill on right
                         # Calculate width to match the available content width
                         # Available width = page width - margins - icon width - paddings
                         available_width = (A4[0] - 20*mm - 20*mm - 5*mm - 8*mm)  # page - margins - icon - left/right padding
-                        skill_formatted = markdown_to_text(skill_text)
+                        skill_formatted = process_emojis_in_text(markdown_to_text(skill_text))
                         header_data = [[
                             Paragraph(f"<b>{header_title}</b>", card_header_style),
                             Paragraph(f"<i>{skill_formatted}</i>", skill_header_style)
                         ]]
                         header_table = Table(header_data, colWidths=[available_width * 0.6, available_width * 0.4])
                         header_table.setStyle(TableStyle([
-                            ('ALIGN', (0, 0), (0, 0), 'LEFT'),     # Title left-aligned
-                            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),    # Skill right-aligned
-                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+                            ('ALIGN', (1, 0), (1, 0), 'RIGHT'),
+                            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
                             ('LEFTPADDING', (0, 0), (-1, -1), 0),
                             ('RIGHTPADDING', (0, 0), (-1, -1), 0),
                             ('TOPPADDING', (0, 0), (-1, -1), 0),
                             ('BOTTOMPADDING', (0, 0), (-1, -1), 0),
                         ]))
-                        content_elements.append(header_table)
+                        card_elements.append(header_table)
                     else:
                         # Simple header without skill
-                        content_elements.append(Paragraph(f"<b>{header_title}</b>", card_header_style))
+                        header_text = f"<b>{header_title}</b>"
+                        header_para = Paragraph(header_text, card_header_style)
+                        card_elements.append(header_para)
                     
-                    # Add description paragraphs
-                    for para in description_paragraphs:
-                        content_elements.append(para)
+                    card_elements.append(Spacer(1, 1*mm))
                     
-                    # Add cost/gain table to content if there's data
-                    if table_data:
-                        # Convert table data to paragraphs - handle both 2-column and 4-column rows
-                        table_data_formatted = []
-                        col_widths = []
+                    # Add description
+                    description_text = item.get('description', '')
+                    if description_text:
+                        description_formatted = process_emojis_in_text(description_text)
+                        description_paras = markdown_to_paragraphs(description_formatted, description_style)
+                        for para in description_paras:
+                            card_elements.append(para)
+                        card_elements.append(Spacer(1, 2*mm))
+                    
+                    # Add cost/gain table if either exists
+                    cost_text = item.get('cost', '')
+                    gain_text = item.get('gain', '')
+                    positive_text = item.get('positive', '')
+                    negative_text = item.get('negative', '')
+                    
+                    # Combine gain and positive into gain_display
+                    gain_display = []
+                    if gain_text:
+                        gain_display.append(gain_text)
+                    if positive_text:
+                        gain_display.append(positive_text)
+                    
+                    # Combine cost and negative into cost_display  
+                    cost_display = []
+                    if cost_text:
+                        cost_display.append(cost_text)
+                    if negative_text:
+                        cost_display.append(negative_text)
+                    
+                    if cost_display or gain_display:
+                        table_data = []
                         
-                        for row in table_data:
-                            if len(row) == 4:  # Cost and Gain in same row
-                                table_data_formatted.append([
-                                    Paragraph(f"<b>{row[0]}</b>", table_cell_style),  # "Cost:"
-                                    Paragraph(str(row[1]), table_cell_style),         # cost value
-                                    Paragraph(f"<b>{row[2]}</b>", table_cell_style),  # "Gain:"
-                                    Paragraph(str(row[3]), table_cell_style)          # gain value
-                                ])
-                                col_widths = [12*mm, None, 12*mm, None]  # 4 columns - reduced label width
-                            else:  # 2-column row (Effect, or single Cost/Gain)
-                                table_data_formatted.append([
-                                    Paragraph(f"<b>{row[0]}</b>", table_cell_style),
-                                    Paragraph(str(row[1]), table_cell_style)
-                                ])
-                                if not col_widths:  # Set column widths for 2-column layout
-                                    col_widths = [15*mm, None]  # 2 columns - reduced label width
+                        if cost_display and gain_display:
+                            # Both cost and gain - create combined row
+                            cost_combined = ' // '.join(cost_display)
+                            gain_combined = ' // '.join(gain_display)
+                            cost_formatted = process_emojis_in_text(markdown_to_text(cost_combined))
+                            gain_formatted = process_emojis_in_text(markdown_to_text(gain_combined))
+                            table_data.append([
+                                Paragraph(f"<b>Cost:</b> {cost_formatted}", cost_gain_style),
+                                Paragraph(f"<b>Gain:</b> {gain_formatted}", cost_gain_style)
+                            ])
+                        elif cost_display:
+                            # Only cost
+                            cost_combined = ' // '.join(cost_display)
+                            cost_formatted = process_emojis_in_text(markdown_to_text(cost_combined))
+                            table_data.append([
+                                Paragraph(f"<b>Cost:</b> {cost_formatted}", cost_gain_style),
+                                ""
+                            ])
+                        elif gain_display:
+                            # Only gain
+                            gain_combined = ' // '.join(gain_display)
+                            gain_formatted = process_emojis_in_text(markdown_to_text(gain_combined))
+                            table_data.append([
+                                "",
+                                Paragraph(f"<b>Gain:</b> {gain_formatted}", cost_gain_style)
+                            ])
                         
-                        # Create the info table
-                        info_table = Table(table_data_formatted, colWidths=col_widths)
-                        info_table.setStyle(TableStyle([
-                            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
-                            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                            ('FONTNAME', (0, 0), (-1, -1), UNICODE_FONT),
-                            ('FONTSIZE', (0, 0), (-1, -1), 8),
+                        cost_gain_table = Table(table_data, colWidths=[90*mm, 90*mm])
+                        cost_gain_table.setStyle(TableStyle([
                             ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
                             ('TOPPADDING', (0, 0), (-1, -1), 2),
                             ('LEFTPADDING', (0, 0), (-1, -1), 0),  # No left padding since it's inside the main card
                             ('RIGHTPADDING', (0, 0), (-1, -1), 0),  # No right padding since it's inside the main card
-                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ]))
-                        
-                        # Add a small spacer before the table if we have other content
-                        if content_elements:
-                            content_elements.append(Spacer(1, 2*mm))
-                        content_elements.append(info_table)
+                        card_elements.append(cost_gain_table)
                     
-                    # Create a table with icon on left and ALL content (header + description + cost/gain table) on right
-                    if content_elements:
-                        # Combine all content into a single cell content
-                        content_data = [[icon, content_elements]]
-                        
-                        # Determine background color for alternating cards
-                        bg_color = colors_config['card_background_1'] if card_counter % 2 == 0 else colors_config['card_background_2']
-                        
-                        content_table = Table(content_data, colWidths=[20*mm, None])
-                        content_table.setStyle(TableStyle([
-                            ('BACKGROUND', (0, 0), (-1, -1), bg_color),
-                            ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                            ('LEFTPADDING', (0, 0), (0, -1), 0),  # Icon column - no left padding
-                            ('LEFTPADDING', (1, 0), (-1, -1), 5),  # Content column - add left padding
-                            ('RIGHTPADDING', (0, 0), (-1, -1), 8),
-                            ('TOPPADDING', (0, 0), (-1, -1), 2),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
-                        ]))
-                        
-                        card_elements.append(content_table)
-                    else:
-                        # Just icon if no content
-                        icon_table = Table([[icon]], colWidths=[20*mm])
-                        icon_table.setStyle(TableStyle([
-                            ('LEFTPADDING', (0, 0), (-1, -1), 0),
-                            ('TOPPADDING', (0, 0), (-1, -1), 2),
-                            ('BOTTOMPADDING', (0, 0), (-1, -1), 2),
-                        ]))
-                        card_elements.append(icon_table)
+                    # Create the main card table with icon on the left and content on the right
+                    card_table_data = [[main_icon, card_elements]]
+                    card_table = Table(card_table_data, colWidths=[25*mm, None])
                     
-                    # Add each card element directly to the main flow
-                    # Wrap the entire card in KeepTogether to prevent page breaks
-                    card_with_separator = card_elements.copy()
-                    card_with_separator.append(Spacer(1, 3*mm))
+                    # Determine background color (alternating)
+                    bg_color = colors_config['card_background_1'] if card_counter % 2 == 0 else colors_config['card_background_2']
                     
-                    elements.append(KeepTogether(card_with_separator))
+                    card_table.setStyle(TableStyle([
+                        ('ALIGN', (0, 0), (0, 0), 'CENTER'),  # Icon alignment
+                        ('ALIGN', (1, 0), (1, 0), 'LEFT'),    # Content alignment
+                        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+                        ('BACKGROUND', (0, 0), (-1, -1), bg_color),
+                        ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                        ('LEFTPADDING', (0, 0), (0, -1), 0),  # Icon column - no left padding
+                        ('RIGHTPADDING', (0, 0), (0, -1), 5), # Icon column - small right padding
+                        ('LEFTPADDING', (1, 0), (-1, -1), 5), # Content column - left padding
+                        ('RIGHTPADDING', (1, 0), (-1, -1), 8), # Content column - right padding
+                        ('TOPPADDING', (0, 0), (-1, -1), 8),
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+                    ]))
                     
-                    # Increment card counter for alternating backgrounds
+                    elements.append(card_table)
+                    elements.append(Spacer(1, 3*mm))
                     card_counter += 1
-
-        # Add page break between sections
-        if section != list(data.keys())[-1]:  # Don't add page break after last section
-            elements.append(PageBreak())
+    
+    else:
+        # If no 'sheet' structure found, show error message
+        elements.append(Paragraph("Error: YAML file must have 'sheet' structure with 'sections'", page_header_style))
 
     # Build the PDF
     doc.build(elements)
     print(f"✅ PDF created: {pdf_name}")
+
 
 # ---------- Main Execution ----------
 if __name__ == "__main__":

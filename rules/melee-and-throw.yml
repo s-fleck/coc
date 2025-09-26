@@ -1,77 +1,82 @@
-"Melee & Throw":
-  actions:
-    "Brawl":
-      icon: "img/melee_brawl.png"
-      skill: "Fighting (Brawl)"
-      description: |
-        Simple unarmed attack. Deals `1d3+DB` damage.
+sheet:
+  sections:
+    - title: "Melee & Throw"
+      type: "full_card"
+      items:
+        - title: "Brawl"
+          icon: "img/melee_brawl.png"
+          skill: "Fighting (Brawl)"
+          description: |
+            Simple unarmed attack. Deals `1d3+DB` damage.
 
-        **Extreme success:** Max damage + DB.
-      cost: 1 combat action
+            **Extreme success:** Max damage + DB.
+          cost: 1 combat action
 
-    "Use Weapon":
-      icon: "img/melee_use_weapon.png"
-      skill: "Fighting (Brawl // Weapon)"
-      description: |
-        Melee weapon attack (*axe, sword, spear, chainsaw...*). Use appropriate weapon's skill instead of `Fighting (Brawl)`.
+        - title: "Use Weapon"
+          icon: "img/melee_use_weapon.png"
+          skill: "Fighting (Brawl // Weapon)"
+          description: |
+            Melee weapon attack (*axe, sword, spear, chainsaw...*). Use appropriate weapon's skill instead of `Fighting (Brawl)`.
 
-        **Extreme success:** Max damage. In addition, edged weapons inflict impaling strike.
-      cost: 1 combat action
+            **Extreme success:** Max damage. In addition, edged weapons inflict impaling strike.
+          cost: 1 combat action
 
-    "Fighting Maneuver":
-      icon: "img/melee_maneuver.png"
-      skill: "Fighting (Brawl)"
-      description: |
-        Non-damaging action (*disarm, push, knockout...*).
+        - title: "Fighting Maneuver"
+          icon: "img/melee_maneuver.png"
+          skill: "Fighting (Brawl)"
+          description: |
+            Non-damaging action (*disarm, push, knockout...*).
 
-        Compare builds:
+            Compare builds:
 
-        - **Defender +1:** Attacker gets +1 penalty 🎲
-        - **Defender +2:** Attacker gets +2 penalty 🎲  
-        - **Defender +3+:** Impossible
-      cost: 1 combat action
-      negative: "Up to +2 penalty 🎲"
+            - **Defender +1:** Attacker gets +1 penalty 🎲
+            - **Defender +2:** Attacker gets +2 penalty 🎲  
+            - **Defender +3+:** Impossible
+          cost: 1 combat action
+          negative: "Up to +2 penalty 🎲"
 
-    "Overwhelm":
-      icon: "img/melee_overwhelm.png"
-      skill: "Fighting (Brawl // Weapon)"
-      description: |
-        **Melee only.** When multiple attackers target same opponent who already used evasive actions this round,
-        all further melee attacks gain +1 bonus 🎲.
+        - title: "Overwhelm"
+          icon: "img/melee_overwhelm.png"
+          skill: "Fighting (Brawl // Weapon)"
+          description: |
+            **Melee only.** When multiple attackers target same opponent who already used evasive actions this round,
+            all further melee attacks gain +1 bonus 🎲.
 
-        Opponent can only `dodge`/`fight back` as many times as their number of attacks per round.
-      cost: 1 combat action
-      positive: "+1 bonus die (when conditions met)"
+            Opponent can only `dodge`/`fight back` as many times as their number of attacks per round.
+          cost: 1 combat action
+          positive: "+1 bonus die (when conditions met)"
 
-    "Throw":
-      icon: "img/melee_throw.png"
-      skill: "Throw"
-      description: |
-        Throw object up to `1/5 STR` yards.
+        - title: "Throw"
+          icon: "img/melee_throw.png"
+          skill: "Throw"
+          description: |
+            Throw object up to `1/5 STR` yards.
 
-        - **Hard roll** to throw `×2` distance. 
-        - **Extreme roll:** to throw `×4` distance.
+            - **Hard roll** to throw `×2` distance. 
+            - **Extreme roll:** to throw `×4` distance.
 
-        Thrown melee weapons: normal damage, halve DB. Can be dodged. Fight back is possible only if within `1/5 DEX` feet.
-      cost: 1 combat action
+            Thrown melee weapons: normal damage, halve DB. Can be dodged. Fight back is possible only if within `1/5 DEX` feet.
+          cost: 1 combat action
 
-  modifiers:
-    "Impaling Strike":
-      icon: "img/mod_impaling_strike.png"
-      description: "Extreme success with edged weapon"
-      positive: "Full damage + DB + damage roll"
+    - title: "Modifiers"
+      type: "mini_card"
+      items:
+        - title: "Impaling Strike"
+          icon: "img/mod_impaling_strike.png"
+          description: "Extreme success with edged weapon"
+          positive: "Full damage + DB + damage roll"
 
-    "Surprise Attack":
-      icon: "img/mod_surprise_attack.png"
-      description: "Target unaware of attack"
-      positive: "Auto-success OR +1 bonus 🎲"
+        - title: "Surprise Attack"
+          icon: "img/mod_surprise_attack.png"
+          description: "Target unaware of attack"
+          positive: "Auto-success OR +1 bonus 🎲"
 
-    "Weapon Fumble":
-      icon: "img/mod_fumble.png"
-      description: "Roll `96+` (skill `<50`) or `100` (skill `≥50`)"
-      negative: "Failure with unintended consequences"
+        - title: "Weapon Fumble"
+          icon: "img/mod_fumble.png"
+          description: "Roll `96+` (skill `<50`) or `100` (skill `≥50`)"
+          negative: "Failure with unintended consequences"
 
-    "Target Armour":
-      icon: "img/mod_armour.png"
-      description: "Enemy is armoured"
-      negative: "Damage reduced by armour value"
+        - title: "Target Armour"
+          icon: "img/mod_armour.png"
+          description: "Enemy is armoured"
+          negative: "Damage reduced by armour value"

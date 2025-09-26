@@ -1,52 +1,55 @@
-"Movement":
-  actions:
-    "Move":
-      icon: "img/movements_move.png"
-      description: |
-        Move up to `MOV` yards.
-      cost: 1 move action
+sheet:
+  sections:
+    - title: "Movement"
+      type: "full_card"
+      items:
+        - title: "Move"
+          icon: "img/movements_move.png"
+          description: |
+            Move up to `MOV` yards.
+          cost: 1 move action
 
-    "Sprint":
-      icon: "img/movements_sprint.png"
-      description: |
-        Move up to `5× MOV` yards. Combat actions you perform this turn get +1 penalty 🎲. 
-        If you have `MOV 8` or higher, firearms attacks against you get +1 penalty 🎲.
-      cost: "1 move action, +1 penalty 🎲"
-      gain: "`5×` movement; firearms vs you get +1 penalty 🎲 (`MOV 8+`)"
+        - title: "Sprint"
+          icon: "img/movements_sprint.png"
+          description: |
+            Move up to `5× MOV` yards. Combat actions you perform this turn get +1 penalty 🎲. 
+            If you have `MOV 8` or higher, firearms attacks against you get +1 penalty 🎲.
+          cost: "1 move action, +1 penalty 🎲"
+          gain: "`5×` movement; firearms vs you get +1 penalty 🎲 (`MOV 8+`)"
 
-    "Take Cover":
-      icon: "img/movements_take_cover.png"
-      description: |
-        Move behind partial or full cover. 
+        - title: "Take Cover"
+          icon: "img/movements_take_cover.png"
+          description: |
+            Move behind partial or full cover. 
 
-        - **Partial:** firearms vs you get +1 penalty 🎲. 
-        - **Full:** immunity to ranged attacks (until you move/lean out).
-      cost: 1 move action
-      gain: "Ranged attacks against you gains +1 penalty 🎲 (partial) // Ranged immunity (full)"
+            - **Partial:** firearms vs you get +1 penalty 🎲. 
+            - **Full:** immunity to ranged attacks (until you move/lean out).
+          cost: 1 move action
+          gain: "Ranged attacks against you gains +1 penalty 🎲 (partial) // Ranged immunity (full)"
 
-    "Perform Action":
-      icon: "img/movements_perform_action.png"
-      description: |
-        Use combat action for non-combat tasks (*first aid*, *lockpicking*, *climbing*, ...). Keeper may require skill roll.
-      cost: 1 combat action
+        - title: "Perform Action"
+          icon: "img/movements_perform_action.png"
+          description: |
+            Use combat action for non-combat tasks (*first aid*, *lockpicking*, *climbing*, ...). Keeper may require skill roll.
+          cost: 1 combat action
 
-    "Assist Action":
-      icon: "img/movements_assist_action.png"
-      description: |
-        Help another player with their action this turn (e.g., hand them equipment, give them a lift up during climbing, distract enemies). Grant them bonus 🎲 for their roll.
-      cost: 1 combat action
-      gain: "+1 bonus 🎲 for assisted player"
+        - title: "Assist Action"
+          icon: "img/movements_assist_action.png"
+          description: |
+            Help another player with their action this turn (e.g., hand them equipment, give them a lift up during climbing, distract enemies). Grant them bonus 🎲 for their roll.
+          cost: 1 combat action
+          gain: "+1 bonus 🎲 for assisted player"
 
-    "Hold Action":
-      icon: "img/movements_hold_action.png"
-      description: |
-        Skip your turn and describe what you are doing. May get +1 bonus 🎲 next turn if GM approves your tactical reasoning.
-        *e.g.: hold to anticipate an attack may give you a +1 bonus 🎲 on dodge or fight back next turn
-      cost: 1 turn
-      gain: "+1 bonus 🎲 next turn (GM approval)"
+        - title: "Hold Action"
+          icon: "img/movements_hold_action.png"
+          description: |
+            Skip your turn and describe what you are doing. May get +1 bonus 🎲 next turn if GM approves your tactical reasoning.
+            *e.g.: hold to anticipate an attack may give you a +1 bonus 🎲 on dodge or fight back next turn
+          cost: 1 turn
+          gain: "+1 bonus 🎲 next turn (GM approval)"
 
-    "Flee":
-      icon: "img/movements_flee.png"
-      description: |
-        Disengage and flee combat. Takes full round - enemies can still attack until your next turn. May trigger chase.
-      cost: 1 turn
+        - title: "Flee"
+          icon: "img/movements_flee.png"
+          description: |
+            Disengage and flee combat. Takes full round - enemies can still attack until your next turn. May trigger chase.
+          cost: 1 turn

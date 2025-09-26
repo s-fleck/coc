@@ -1,138 +1,145 @@
-"Firearms":
-  actions:
-    "Fire Weapon":
-      icon: "img/firearms_fire_weapon.png"
-      skill: "Firearms (Weapon)"
-      description: |
-        Single shot attack with drawn firearm. Use appropriate weapon skill (Handgun, Rifle, etc...). 
+sheet:
+  sections:
+    - firearms:
+      title: "Firearms"
+      type: "full_card"
 
-        **Extreme success** causes impaling strike (except flamethrowers).
-      cost: 1 combat action
+      items:
+        - title: "Fire Weapon"
+          icon: "img/firearms_fire_weapon.png"
+          skill: "Firearms (Weapon)"
+          description: |
+            Single shot attack with drawn firearm. Use appropriate weapon skill (Handgun, Rifle, etc...). 
 
-    "Quick Fire":
-      icon: "img/firearms_quick_fire.png"
-      skill: "Firearms (Weapon)"
-      description: >
-        Declare at round start to *fire first*. Add `+50` to `DEX` for initiative this round only. 
-        *Firing* must be your only action - lose bonus if you *move*, *brawl*, or *take evasive action* 
-        before shooting. You may *dodge*, *counter* an attack or *take damage* as normal once you have
-        made your shot.
-      cost: 1 turn
-      gain: "`+50` Initiative (`DEX`) for one round"
+            **Extreme success** causes impaling strike (except flamethrowers).
+          cost: 1 combat action
 
-    "Aim Weapon":
-      icon: "img/firearms_aimed_fire.png"
-      skill: "Firearms (Weapon)"
-      description: |
-        Spend entire turn aiming. Next turn, gain +1 bonus 🎲 if firing is your first action. 
+        - title: "Quick Fire"
+          icon: "img/firearms_quick_fire.png"
+          skill: "Firearms (Weapon)"
+          description: >
+            Declare at round start to *fire first*. Add `+50` to `DEX` for initiative this round only. 
+            *Firing* must be your only action - lose bonus if you *move*, *brawl*, or *take evasive action* 
+            before shooting. You may *dodge*, *counter* an attack or *take damage* as normal once you have
+            made your shot.
+          cost: 1 turn
+          gain: "`+50` Initiative (`DEX`) for one round"
 
-        *Lost if you take damage or move before firing*.
-      cost: 1 turn
-      gain: "+1 bonus 🎲 next round"
+        - title: "Aim Weapon"
+          icon: "img/firearms_aimed_fire.png"
+          skill: "Firearms (Weapon)"
+          description: |
+            Spend entire turn aiming. Next turn, gain +1 bonus 🎲 if firing is your first action. 
 
-    "Point Blank Range":
-      icon: "img/firearms_point_blank_range.png"
-      skill: "Firearms (Weapon)"
-      description: |
-        Target within `1/5` of `DEX` in feet. Gain +1 bonus 🎲 to attack. Target cannot dodge or fight 
-        back against firearm attacks.
+            *Lost if you take damage or move before firing*.
+          cost: 1 turn
+          gain: "+1 bonus 🎲 next round"
 
-        *Note that the shooter is vulnerable to melee attacks and disarming at point blank range.*
-      cost: 1 combat action
-      gain: "+1 bonus 🎲"
+        - title: "Point Blank Range"
+          icon: "img/firearms_point_blank_range.png"
+          skill: "Firearms (Weapon)"
+          description: |
+            Target within `1/5` of `DEX` in feet. Gain +1 bonus 🎲 to attack. Target cannot dodge or fight 
+            back against firearm attacks.
 
-    "Multiple Shot":
-      icon: "img/firearms_multiple_shots.png"
-      skill: "Firearms (Handguns)"
-      description: >
-        **Handguns/burst weapons only**. Fire up to weapon's max `Attacks` rating in single round. 
-        Each shot takes +1 penalty 🎲.
-      cost: "1 combat action, +1 penalty 🎲 for each shot taken"
+            *Note that the shooter is vulnerable to melee attacks and disarming at point blank range.*
+          cost: 1 combat action
+          gain: "+1 bonus 🎲"
 
-    "Fire Automatic":
-      icon: "img/firearms_fire_automatic.png"
-      skill: "Firearms (Machine Gun // SMG)"
-      description: |
-        **Automatic weapons only**. Fire up to `skill/10` bullets (rounded down, min `3`) per volley. 
+        - title: "Multiple Shot"
+          icon: "img/firearms_multiple_shots.png"
+          skill: "Firearms (Handguns)"
+          description: >
+            **Handguns/burst weapons only**. Fire up to weapon's max `Attacks` rating in single round. 
+            Each shot takes +1 penalty 🎲.
+          cost: "1 combat action, +1 penalty 🎲 for each shot taken"
 
-        *Multiple volleys are possible but increase difficulty.*
+        - title: "Fire Automatic"
+          icon: "img/firearms_fire_automatic.png"
+          skill: "Firearms (Machine Gun // SMG)"
+          description: |
+            **Automatic weapons only**. Fire up to `skill/10` bullets (rounded down, min `3`) per volley. 
 
-        - **Success**: half the bullets (rounded down) hit
-        - **Extreme success**: all hit, half are impaling
-      cost: |
-        • 1 combat action for single volley
-        • 1 Turn for multiple volleys
-        • +1 penalty 🎲 / difficulty increase for each successive volley in a single turn
+            *Multiple volleys are possible but increase difficulty.*
 
-    "Reload Weapon":
-      icon: "img/firearms_reload.png"
-      description: |
-        - **Manual loading**: 2 shells per action (revolvers, shotguns). 
-        - **Magazine**: full reload per action. 
-        - **Heavy weapons**: 2 full turns. 
+            - **Success**: half the bullets (rounded down) hit
+            - **Extreme success**: all hit, half are impaling
+          cost: |
+            • 1 combat action for single volley
+            • 1 Turn for multiple volleys
+            • +1 penalty 🎲 / difficulty increase for each successive volley in a single turn
 
-        *You cannot reload while sprinting.*
-      cost: 1 combat action
+        - title: "Reload Weapon"
+          icon: "img/firearms_reload.png"
+          description: |
+            - **Manual loading**: 2 shells per action (revolvers, shotguns). 
+            - **Magazine**: full reload per action. 
+            - **Heavy weapons**: 2 full turns. 
 
-    "Single Bullet Reload":
-      icon: "img/firearms_reload_single_bullet.png"
-      description: >
-        **Manual weapons only**. Load single shell and fire in same round.
-      cost: "+1 penalty 🎲 for combat roll"
+            *You cannot reload while sprinting.*
+          cost: 1 combat action
 
-  modifiers:
-    "Impaling strike":
-      icon: "img/mod_impaling_strike.png"
-      description: "**Extreme Success** with firearm attack"
-      positive: "Full Damage + Damage Roll"
+        - title: "Single Bullet Reload"
+          icon: "img/firearms_reload_single_bullet.png"
+          description: >
+            **Manual weapons only**. Load single shell and fire in same round.
+          cost: "+1 penalty 🎲 for combat roll"
 
-    "Long range":
-      icon: "img/mod_range.png"
-      description: "`2x` to `4x` weapon's base range"
-      negative: "Roll hard difficulty // Extreme difficulty roll"
+    - title: "modifiers"
+      section_type: "mini_card"
+      items:
+        - title: "Impaling strike"
+          icon: "img/mod_impaling_strike.png"
+          description: "**Extreme Success** with firearm attack"
+          positive: "Full Damage + Damage Roll"
 
-    "Surprise attack":
-      icon: "img/mod_surprise_attack.png"
-      description: "Target unaware of incoming attack"
-      positive: "+1 bonus 🎲"
+        - title: "Long range"
+          icon: "img/mod_range.png"
+          description: "`2x` to `4x` weapon's base range"
+          negative: "Roll hard difficulty // Extreme difficulty roll"
 
-    "Target size":
-      icon: "img/mod_target_size.png"
-      description: "**Small target** (`Build` ≤2) // **Large target** (`Build` ≥4)"
-      positive: "+1 bonus 🎲 (large target)"
-      negative: "+1 penalty 🎲 (small target)"
+        - title: "Surprise attack"
+          icon: "img/mod_surprise_attack.png"
+          description: "Target unaware of incoming attack"
+          positive: "+1 bonus 🎲"
 
-    Sprinting:
-      icon: "img/mod_sprinting.png"
-      description: "Shooter is sprinting during combat round"
-      negative: "+1 penalty 🎲 on shots"
+        - title: "Target size"
+          icon: "img/mod_target_size.png"
+          description: "**Small target** (`Build` ≤2) // **Large target** (`Build` ≥4)"
+          positive: "+1 bonus 🎲 (large target)"
+          negative: "+1 penalty 🎲 (small target)"
 
-    "Fast-moving target":
-      icon: "img/firearms_fast_moving_target.png"
-      description: "Target ist sprinting (`MOV 8+`)"
-      negative: "+1 penalty 🎲 on shots"
+        - title: "Sprinting"
+          icon: "img/mod_sprinting.png"
+          description: "Shooter is sprinting during combat round"
+          negative: "+1 penalty 🎲 on shots"
 
-    "Target dives":
-      icon: "img/firearms_target_dive.png"
-      description: "Target dives for cover + makes successful Dodge roll"
-      negative: "+1 penalty 🎲 on shots"
+        - title: "Fast-moving target"
+          icon: "img/firearms_fast_moving_target.png"
+          description: "Target ist sprinting (`MOV 8+`)"
+          negative: "+1 penalty 🎲 on shots"
 
-    "In cover":
-      icon: "img/firearms_cover.png"
-      description: "Target behind cover (partial/full)"
-      negative: "+1 penalty 🎲 // unable to hit"
+        - title: "Target dives"
+          icon: "img/firearms_target_dive.png"
+          description: "Target dives for cover + makes successful Dodge roll"
+          negative: "+1 penalty 🎲 on shots"
 
-    "Malfunction":
-      icon: "img/mod_fumble.png"
-      description: "Malfunction on: 96+ (skill < 50) or 100 (skill >= 50)"
-      negative: "Weapon malfunctions // other consequence"
+        - title: "In cover"
+          icon: "img/firearms_cover.png"
+          description: "Target behind cover (partial/full)"
+          negative: "+1 penalty 🎲 // unable to hit"
 
-    "Target Armour":
-      icon: "img/mod_armour.png"
-      description: "Target is wearing armor"
-      negative: "Damage reduced by armor value"
+        - title: "Malfunction"
+          icon: "img/mod_fumble.png"
+          description: "Malfunction on: 96+ (skill < 50) or 100 (skill >= 50)"
+          negative: "Weapon malfunctions // other consequence"
 
-    "Fire into melee":
-      icon: "img/mod_fire_into_melee.png"
-      description: "Target engaged in melee with ally"
-      negative: "+1 penalty 🎲, friendly fire on fumble"
+        - title: "Target Armour"
+          icon: "img/mod_armour.png"
+          description: "Target is wearing armor"
+          negative: "Damage reduced by armor value"
+
+        - title: "Fire into melee"
+          icon: "img/mod_fire_into_melee.png"
+          description: "Target engaged in melee with ally"
+          negative: "+1 penalty 🎲, friendly fire on fumble"
