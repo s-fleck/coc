@@ -1,3 +1,6 @@
+import glob
+import markdown
+import os
 import yaml
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, PageBreak, Spacer, KeepTogether
@@ -7,14 +10,10 @@ from reportlab.lib.units import inch, mm
 from reportlab.lib.enums import TA_LEFT, TA_CENTER, TA_JUSTIFY
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-import os
-import glob
-import markdown
 from reportlab.platypus.flowables import Flowable
 from reportlab.graphics.shapes import Line
 from reportlab.lib.utils import ImageReader
 from PIL import Image
-import os
 
 # SVG support imports
 try:

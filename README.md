@@ -15,6 +15,7 @@ Available cheat sheets:
 - **Evasion** 🤸 - Dodge mechanics and defensive actions
 - **Firearms** 🎯 - Ranged combat actions
 - **Melee & Throw** ⚔️ - Close combat and throwing actions
+- **Pulp Luck** ⚔️ - Extra luck rules for Pulp Cthulhu
 
 ## Features
 
