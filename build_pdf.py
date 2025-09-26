@@ -244,12 +244,12 @@ def process_emojis_in_text(text):
     # Check if emoji font is available
     emoji_font = None
     try:
-        from reportlab.pdfbase.pdfmetrics import getFont
-        if 'NotoEmoji' in [f.fontName for f in pdfmetrics._fonts.values()]:
+        # Check if emoji fonts are registered by looking at the font names directly
+        if 'NotoEmoji' in pdfmetrics._fonts:
             emoji_font = 'NotoEmoji'
-        elif 'SegoeEmoji' in [f.fontName for f in pdfmetrics._fonts.values()]:
+        elif 'SegoeEmoji' in pdfmetrics._fonts:
             emoji_font = 'SegoeEmoji'
-        elif 'NotoColorEmoji' in [f.fontName for f in pdfmetrics._fonts.values()]:
+        elif 'NotoColorEmoji' in pdfmetrics._fonts:
             emoji_font = 'NotoColorEmoji'
     except:
         pass
@@ -272,57 +272,80 @@ def markdown_to_paragraphs(md_text, style):
     if not md_text:
         return []
     
-    # First process emojis
-    md_text = process_emojis_in_text(md_text)
+    # Convert markdown to HTML using the standard library
+    html = markdown.markdown(md_text.strip(), extensions=['nl2br'])
     
-    # First, handle double newlines in the raw text before markdown processing
-    # This is important for literal block scalars (|) in YAML
-    import re
+    # Convert HTML to ReportLab-compatible markup using html2text-like approach
+    from html.parser import HTMLParser
     
-    # Normalize line endings and handle paragraph breaks
-    normalized_text = md_text.strip()
-    # Convert double newlines (paragraph breaks) to a special marker
-    paragraph_marker = "|||PARAGRAPH_BREAK|||"
-    normalized_text = re.sub(r'\n\s*\n', f'\n\n{paragraph_marker}\n\n', normalized_text)
+    class ReportLabHTMLParser(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.result = []
+            self.tag_stack = []
+            
+        def handle_starttag(self, tag, attrs):
+            if tag == 'strong' or tag == 'b':
+                self.result.append('<b>')
+            elif tag == 'em' or tag == 'i':
+                self.result.append('<i>')
+            elif tag == 'code':
+                self.result.append('<font name="Courier"><b>')
+            elif tag == 'li':
+                self.result.append('• ')
+            elif tag == 'br':
+                self.result.append('<br/>')
+            elif tag == 'p':
+                if self.result and not self.result[-1].endswith('<br/>'):
+                    self.result.append('<br/>')
+            self.tag_stack.append(tag)
+            
+        def handle_endtag(self, tag):
+            if self.tag_stack and self.tag_stack[-1] == tag:
+                self.tag_stack.pop()
+                
+            if tag == 'strong' or tag == 'b':
+                self.result.append('</b>')
+            elif tag == 'em' or tag == 'i':
+                self.result.append('</i>')
+            elif tag == 'code':
+                self.result.append('</b></font>')
+            elif tag == 'li':
+                self.result.append('<br/>')
+            elif tag == 'p':
+                self.result.append('<br/>')
+            elif tag in ['ul', 'ol']:
+                if self.result and not self.result[-1].endswith('<br/>'):
+                    self.result.append('<br/>')
+                    
+        def handle_data(self, data):
+            self.result.append(data)
+            
+        def get_text(self):
+            text = ''.join(self.result)
+            # Clean up extra line breaks
+            import re
+            text = re.sub(r'<br/><br/><br/>', '<br/><br/>', text)  # Remove triple breaks
+            text = re.sub(r'^<br/>', '', text)  # Remove leading breaks
+            text = re.sub(r'<br/>$', '', text)  # Remove trailing breaks
+            return text.strip()
     
-    # Convert markdown to HTML
-    html = markdown.markdown(normalized_text)
+    parser = ReportLabHTMLParser()
+    parser.feed(html)
+    text = parser.get_text()
     
-    # Convert HTML to ReportLab compatible format
-    text = html
-    text = re.sub(r'<p>(.*?)</p>', r'\1<br/>', text)  # Convert HTML paragraphs
-    text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
-    text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
-    
-    # Handle inline code formatting (backticks in markdown)
-    # Convert <code> tags to a styled format that looks like code
-    text = re.sub(r'<code>(.*?)</code>', r'<font name="Courier"><b>\1</b></font>', text)  # Code style
-    
-    # Handle bullet points (HTML lists)
-    text = re.sub(r'<ul>', '', text)  # Remove ul tags
-    text = re.sub(r'</ul>', '<br/>', text)  # Replace closing ul with line break
-    text = re.sub(r'<li>(.*?)</li>', r'• \1<br/>', text)  # Convert li to bullet points
-    
-    # Convert our paragraph break markers to actual breaks
-    text = text.replace(paragraph_marker, '<br/><br/>')
-    # Also handle the marker wrapped in HTML paragraphs
-    text = re.sub(rf'<p>{re.escape(paragraph_marker)}</p>', '<br/><br/>', text)
-    
-    # Handle manual line breaks from HTML <br> tags (if any exist)
-    text = re.sub(r'<br\s*/?>', '<br/>', text)  # Normalize br tags
-    
-    # Clean up extra line breaks and HTML entities
-    text = re.sub(r'<br/><br/><br/>', '<br/><br/>', text)  # Remove triple breaks
-    text = re.sub(r'<br/><br/>$', '', text)  # Remove trailing double breaks
-    text = re.sub(r'<br/>$', '', text)  # Remove single trailing break
-    text = text.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&')
+    # Process emojis in the final parsed text
+    text = process_emojis_in_text(text)
     
     # Split on double line breaks for multiple paragraphs
     paragraphs = []
-    parts = text.split('<br/><br/>')
-    for part in parts:
-        if part.strip():
-            paragraphs.append(Paragraph(part.strip(), style))
+    if '<br/><br/>' in text:
+        parts = text.split('<br/><br/>')
+        for part in parts:
+            if part.strip():
+                paragraphs.append(Paragraph(part.strip(), style))
+    else:
+        paragraphs.append(Paragraph(text, style))
     
     return paragraphs if paragraphs else [Paragraph(text, style)]
 
@@ -331,25 +354,45 @@ def markdown_to_text(md_text):
     if not md_text:
         return ""
     
-    # First process emojis
-    md_text = process_emojis_in_text(md_text)
-    
-    # Convert markdown to HTML
+    # Convert markdown to HTML using standard library
     html = markdown.markdown(str(md_text).strip())
     
-    import re
-    # Convert HTML to ReportLab compatible format
-    text = html
-    # Remove paragraph tags for single-line content
-    text = re.sub(r'<p>(.*?)</p>', r'\1', text)
-    text = re.sub(r'<strong>(.*?)</strong>', r'<b>\1</b>', text)  # Bold
-    text = re.sub(r'<em>(.*?)</em>', r'<i>\1</i>', text)  # Italic
-    text = re.sub(r'<code>(.*?)</code>', r'<font name="Courier"><b>\1</b></font>', text)  # Code
+    # Use the same parser but for single-line content
+    from html.parser import HTMLParser
     
-    # Clean up HTML entities
-    text = text.replace('&gt;', '>').replace('&lt;', '<').replace('&amp;', '&')
+    class SimpleReportLabParser(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.result = []
+            
+        def handle_starttag(self, tag, attrs):
+            if tag == 'strong' or tag == 'b':
+                self.result.append('<b>')
+            elif tag == 'em' or tag == 'i':
+                self.result.append('<i>')
+            elif tag == 'code':
+                self.result.append('<font name="Courier"><b>')
+                
+        def handle_endtag(self, tag):
+            if tag == 'strong' or tag == 'b':
+                self.result.append('</b>')
+            elif tag == 'em' or tag == 'i':
+                self.result.append('</i>')
+            elif tag == 'code':
+                self.result.append('</b></font>')
+                
+        def handle_data(self, data):
+            self.result.append(data)
+            
+        def get_text(self):
+            return ''.join(self.result).strip()
     
-    return text
+    parser = SimpleReportLabParser()
+    parser.feed(html)
+    result = parser.get_text()
+    
+    # Process emojis in the final result
+    return process_emojis_in_text(result)
 
 # ---------- Process YAML Files ----------
 def process_yaml_file(yaml_path):
@@ -544,29 +587,33 @@ def process_yaml_file(yaml_path):
                         # Add description if present
                         description_text = item.get('description', '')
                         if description_text:
-                            description_formatted = process_emojis_in_text(markdown_to_text(description_text))
-                            description_para = Paragraph(description_formatted, mini_card_style)
-                            card_content.append(description_para)
+                            description_paras = markdown_to_paragraphs(description_text, mini_card_style)
+                            card_content.extend(description_paras)
                         
                         # Add positive effect if present
                         positive_text = item.get('positive', '')
                         if positive_text:
-                            positive_formatted = process_emojis_in_text(markdown_to_text(positive_text))
-                            positive_para = Paragraph(f"✓ {positive_formatted}", positive_style)
-                            card_content.append(positive_para)
+                            positive_paras = markdown_to_paragraphs(positive_text, positive_style)
+                            card_content.append(Paragraph("✓", positive_style))
+                            card_content.extend(positive_paras)
                         
                         # Add negative effect if present
                         negative_text = item.get('negative', '')
                         if negative_text:
-                            negative_formatted = process_emojis_in_text(markdown_to_text(negative_text))
-                            negative_para = Paragraph(f"✗ {negative_formatted}", negative_style)
-                            card_content.append(negative_para)
+                            negative_paras = markdown_to_paragraphs(negative_text, negative_style)
+                            card_content.append(Paragraph("✗", negative_style))
+                            card_content.extend(negative_paras)
                         
                         # Add gain/cost info if present
                         gain_text = item.get('gain', '')
                         if gain_text:
-                            gain_formatted = process_emojis_in_text(markdown_to_text(gain_text))
-                            gain_para = Paragraph(f"↗ {gain_formatted}", positive_style)
+                            gain_paragraphs = markdown_to_paragraphs(gain_text, positive_style)
+                            # Take only the first paragraph content for mini cards
+                            if gain_paragraphs:
+                                first_para_text = gain_paragraphs[0].text if hasattr(gain_paragraphs[0], 'text') else str(gain_paragraphs[0])
+                                gain_para = Paragraph(f"↗ {first_para_text}", positive_style)
+                            else:
+                                gain_para = Paragraph(f"↗ {gain_text}", positive_style)
                             card_content.append(gain_para)
                         
                         # Combine all content into a single cell
@@ -674,10 +721,11 @@ def process_yaml_file(yaml_path):
                         # Calculate width to match the available content width
                         # Available width = page width - margins - icon width - paddings
                         available_width = (A4[0] - 20*mm - 20*mm - 5*mm - 8*mm)  # page - margins - icon - left/right padding
-                        skill_formatted = process_emojis_in_text(markdown_to_text(skill_text))
+                        skill_paras = markdown_to_paragraphs(skill_text, skill_header_style)
+                        skill_content = skill_paras[0] if skill_paras else Paragraph(f"<i>{skill_text}</i>", skill_header_style)
                         header_data = [[
                             Paragraph(f"<b>{header_title}</b>", card_header_style),
-                            Paragraph(f"<i>{skill_formatted}</i>", skill_header_style)
+                            skill_content
                         ]]
                         header_table = Table(header_data, colWidths=[available_width * 0.6, available_width * 0.4])
                         header_table.setStyle(TableStyle([
@@ -701,8 +749,7 @@ def process_yaml_file(yaml_path):
                     # Add description
                     description_text = item.get('description', '')
                     if description_text:
-                        description_formatted = process_emojis_in_text(description_text)
-                        description_paras = markdown_to_paragraphs(description_formatted, description_style)
+                        description_paras = markdown_to_paragraphs(description_text, description_style)
                         for para in description_paras:
                             card_elements.append(para)
                         card_elements.append(Spacer(1, 2*mm))
@@ -734,28 +781,40 @@ def process_yaml_file(yaml_path):
                             # Both cost and gain - create combined row
                             cost_combined = ' // '.join(cost_display)
                             gain_combined = ' // '.join(gain_display)
-                            cost_formatted = process_emojis_in_text(markdown_to_text(cost_combined))
-                            gain_formatted = process_emojis_in_text(markdown_to_text(gain_combined))
-                            table_data.append([
-                                Paragraph(f"<b>Cost:</b> {cost_formatted}", cost_gain_style),
-                                Paragraph(f"<b>Gain:</b> {gain_formatted}", cost_gain_style)
-                            ])
+                            cost_paras = markdown_to_paragraphs(cost_combined, cost_gain_style)
+                            gain_paras = markdown_to_paragraphs(gain_combined, cost_gain_style)
+                            cost_content = cost_paras[0] if cost_paras else Paragraph(f"<b>Cost:</b> {cost_combined}", cost_gain_style)
+                            gain_content = gain_paras[0] if gain_paras else Paragraph(f"<b>Gain:</b> {gain_combined}", cost_gain_style)
+                            
+                            # Update the content to include the bold labels
+                            if cost_paras:
+                                cost_text = cost_paras[0].text if hasattr(cost_paras[0], 'text') else str(cost_paras[0])
+                                cost_content = Paragraph(f"<b>Cost:</b> {cost_text}", cost_gain_style)
+                            if gain_paras:
+                                gain_text = gain_paras[0].text if hasattr(gain_paras[0], 'text') else str(gain_paras[0])
+                                gain_content = Paragraph(f"<b>Gain:</b> {gain_text}", cost_gain_style)
+                            
+                            table_data.append([cost_content, gain_content])
                         elif cost_display:
                             # Only cost
                             cost_combined = ' // '.join(cost_display)
-                            cost_formatted = process_emojis_in_text(markdown_to_text(cost_combined))
-                            table_data.append([
-                                Paragraph(f"<b>Cost:</b> {cost_formatted}", cost_gain_style),
-                                ""
-                            ])
+                            cost_paras = markdown_to_paragraphs(cost_combined, cost_gain_style)
+                            if cost_paras:
+                                cost_text = cost_paras[0].text if hasattr(cost_paras[0], 'text') else str(cost_paras[0])
+                                cost_content = Paragraph(f"<b>Cost:</b> {cost_text}", cost_gain_style)
+                            else:
+                                cost_content = Paragraph(f"<b>Cost:</b> {cost_combined}", cost_gain_style)
+                            table_data.append([cost_content, ""])
                         elif gain_display:
                             # Only gain
                             gain_combined = ' // '.join(gain_display)
-                            gain_formatted = process_emojis_in_text(markdown_to_text(gain_combined))
-                            table_data.append([
-                                "",
-                                Paragraph(f"<b>Gain:</b> {gain_formatted}", cost_gain_style)
-                            ])
+                            gain_paras = markdown_to_paragraphs(gain_combined, cost_gain_style)
+                            if gain_paras:
+                                gain_text = gain_paras[0].text if hasattr(gain_paras[0], 'text') else str(gain_paras[0])
+                                gain_content = Paragraph(f"<b>Gain:</b> {gain_text}", cost_gain_style)
+                            else:
+                                gain_content = Paragraph(f"<b>Gain:</b> {gain_combined}", cost_gain_style)
+                            table_data.append(["", gain_content])
                         
                         # Calculate available width for cost/gain table
                         # Available width = page width - margins - icon width - paddings
