@@ -1,6 +1,35 @@
 sheet:
   sections:
     - title: "Use luck to"
+      type: "mini_card"
+      items:
+        - title: "Adjust skill or characteristic roll"
+          icon: "icon"
+          cost: 1:1 luck points
+
+        - title: "Adjust weapon fumble/malfunction"
+          icon: "icon"
+          cost: 10 points
+
+        - title: "Halve sanity costs"
+          icon: "icon"
+          cost: double full sanity cost in luck points
+
+        - title: "Avoid unconsciousness"
+          icon: "icon"
+          cost: 1 point, doubles each round (2, 4, 8, ...)
+
+        - title: "Regain 1d6 hit points"
+          icon: "icon"
+          cost: 20 points
+
+        - title: "Avoid certain death"
+          icon: "icon"
+          description: Regains 1d6+1 HP and returns next scene after combat
+          cost: 30 luck points
+
+    - title: "Can't use luck to"
+      type: "mini_card"
       items:
         - title: "Adjust skill or characteristic roll"
           icon: "icon"

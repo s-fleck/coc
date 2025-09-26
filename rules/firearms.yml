@@ -1,7 +1,6 @@
 sheet:
   sections:
-    - firearms:
-      title: "Firearms"
+    - title: "Firearms"
       type: "full_card"
 
       items:
@@ -86,7 +85,7 @@ sheet:
           cost: "+1 penalty 🎲 for combat roll"
 
     - title: "modifiers"
-      section_type: "mini_card"
+      type: "mini_card"
       items:
         - title: "Impaling strike"
           icon: "img/mod_impaling_strike.png"
