@@ -459,9 +459,22 @@ def process_yaml_file(yaml_path):
         sections = data['sheet']['sections']
         
         for section in sections:
-            section_title = section.get('title', 'Untitled Section')
-            section_type = section.get('type', 'full_card')
-            section_items = section.get('items', [])
+            # Handle two possible section structures:
+            # 1. Direct: {title: "...", type: "...", items: [...]}
+            # 2. Nested: {section_name: {title: "...", type: "...", items: [...]}}
+            
+            if 'title' in section and 'items' in section:
+                # Direct structure
+                section_title = section.get('title', 'Untitled Section')
+                section_type = section.get('type', 'full_card')
+                section_items = section.get('items', [])
+            else:
+                # Nested structure - find the first key that contains the section data
+                section_key = next(iter(section.keys()))
+                section_data = section[section_key]
+                section_title = section_data.get('title', section_key.replace('_', ' ').title())
+                section_type = section_data.get('type', 'full_card')
+                section_items = section_data.get('items', [])
             
             # Add section header
             elements.append(Paragraph(section_title, page_header_style))
@@ -574,11 +587,11 @@ def process_yaml_file(yaml_path):
                     mini_table.setStyle(TableStyle([
                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                        ('LEFTPADDING', (0, 0), (-1, -1), 5),
-                        ('RIGHTPADDING', (0, 0), (-1, -1), 5),
-                        ('TOPPADDING', (0, 0), (-1, -1), 5),
-                        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-                        ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                        ('LEFTPADDING', (0, 0), (-1, -1), 8),   # Increased padding for spacing
+                        ('RIGHTPADDING', (0, 0), (-1, -1), 8),  # Increased padding for spacing
+                        ('TOPPADDING', (0, 0), (-1, -1), 8),    # Increased padding for spacing
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 8), # Increased padding for spacing
+                        # Removed GRID to eliminate borders between mini cards
                         ('BACKGROUND', (0, 0), (-1, -1), colors_config['card_background_1'])
                     ]))
                     
@@ -688,7 +701,10 @@ def process_yaml_file(yaml_path):
                                 Paragraph(f"<b>Gain:</b> {gain_formatted}", cost_gain_style)
                             ])
                         
-                        cost_gain_table = Table(table_data, colWidths=[90*mm, 90*mm])
+                        # Calculate available width for cost/gain table
+                        # Available width = page width - margins - icon width - paddings
+                        available_width = A4[0] - 20*mm - 25*mm - 5*mm - 8*mm  # page - margins - icon - paddings
+                        cost_gain_table = Table(table_data, colWidths=[available_width/2, available_width/2])
                         cost_gain_table.setStyle(TableStyle([
                             ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
                             ('TOPPADDING', (0, 0), (-1, -1), 2),
@@ -709,7 +725,7 @@ def process_yaml_file(yaml_path):
                         ('ALIGN', (1, 0), (1, 0), 'LEFT'),    # Content alignment
                         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
                         ('BACKGROUND', (0, 0), (-1, -1), bg_color),
-                        ('GRID', (0, 0), (-1, -1), 0.5, colors.lightgrey),
+                        # Removed GRID to eliminate vertical lines between icon and content
                         ('LEFTPADDING', (0, 0), (0, -1), 0),  # Icon column - no left padding
                         ('RIGHTPADDING', (0, 0), (0, -1), 5), # Icon column - small right padding
                         ('LEFTPADDING', (1, 0), (-1, -1), 5), # Content column - left padding
