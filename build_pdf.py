@@ -268,21 +268,36 @@ def process_emojis_in_text(text):
     return re.sub(emoji_pattern, replace_emoji, text)
 
 def markdown_to_paragraphs(md_text, style):
-    """Convert markdown text to reportlab paragraphs with emoji support"""
+    """Convert markdown text to reportlab paragraphs with emoji support and compact list spacing"""
     if not md_text:
         return []
     
     # Convert markdown to HTML using the standard library (without nl2br extension)
     html = markdown.markdown(md_text.strip())
     
-    # Convert HTML to ReportLab-compatible markup using html2text-like approach
+    # Create a compact list style based on the main style
+    from reportlab.lib.styles import ParagraphStyle
+    list_style = ParagraphStyle(
+        'CompactList',
+        parent=style,
+        fontSize=style.fontSize,
+        spaceAfter=2,  # Reduced spacing after list items
+        spaceBefore=0,
+        leftIndent=12,  # Indent for bullet point
+        fontName=style.fontName,
+        textColor=style.textColor,
+        alignment=style.alignment
+    )
+    
+    # Convert HTML to ReportLab-compatible markup
     from html.parser import HTMLParser
     
-    class ReportLabHTMLParser(HTMLParser):
+    class CompactListHTMLParser(HTMLParser):
         def __init__(self):
             super().__init__()
             self.result = []
             self.tag_stack = []
+            self.in_list = False
             
         def handle_starttag(self, tag, attrs):
             if tag == 'strong' or tag == 'b':
@@ -298,6 +313,11 @@ def markdown_to_paragraphs(md_text, style):
             elif tag == 'p':
                 if self.result and not self.result[-1].endswith('<br/>'):
                     self.result.append('<br/>')
+            elif tag in ['ul', 'ol']:
+                self.in_list = True
+                # Minimal spacing before list
+                if self.result and not self.result[-1].endswith('<br/>'):
+                    self.result.append('<br/>')
             self.tag_stack.append(tag)
             
         def handle_endtag(self, tag):
@@ -311,57 +331,79 @@ def markdown_to_paragraphs(md_text, style):
             elif tag == 'code':
                 self.result.append('</b></font>')
             elif tag == 'li':
+                # Compact spacing for list items
                 self.result.append('<br/>')
             elif tag == 'p':
                 self.result.append('<br/>')
             elif tag in ['ul', 'ol']:
-                if self.result and not self.result[-1].endswith('<br/>'):
-                    self.result.append('<br/>')
+                self.in_list = False
                     
         def handle_data(self, data):
             self.result.append(data)
             
         def get_text(self):
             text = ''.join(self.result)
-            # Clean up excessive line breaks more comprehensively
             import re
             
-            # Remove any leading line breaks
+            # Clean up excessive line breaks
             text = re.sub(r'^(<br/>)+', '', text)
-            
-            # Remove any trailing line breaks  
             text = re.sub(r'(<br/>)+$', '', text)
-            
-            # Convert 4 or more consecutive line breaks to double line break (paragraph break)
             text = re.sub(r'(<br/>){4,}', '<br/><br/>', text)
-            
-            # Convert exactly 3 consecutive line breaks to double line break  
             text = re.sub(r'(<br/>){3}', '<br/><br/>', text)
-            
-            # Clean up space/line break combinations that create awkward spacing
             text = re.sub(r'\s*(<br/>)+\s*', r'\1', text)
-            
-            # Ensure consistent spacing: any sequence of 2+ line breaks becomes exactly 2
             text = re.sub(r'(<br/><br/>)+', '<br/><br/>', text)
             
             return text.strip()
     
-    parser = ReportLabHTMLParser()
+    parser = CompactListHTMLParser()
     parser.feed(html)
     text = parser.get_text()
     
     # Process emojis in the final parsed text
     text = process_emojis_in_text(text)
     
-    # Split on double line breaks for multiple paragraphs
-    paragraphs = []
-    if '<br/><br/>' in text:
-        parts = text.split('<br/><br/>')
-        for part in parts:
-            if part.strip():
-                paragraphs.append(Paragraph(part.strip(), style))
+    # Detect if we have lists and handle them with compact spacing
+    if '• ' in text:
+        # Split content into paragraphs and process lists specially
+        paragraphs = []
+        if '<br/><br/>' in text:
+            parts = text.split('<br/><br/>')
+            for part in parts:
+                if part.strip():
+                    if '• ' in part:
+                        # This part contains list items - use compact style
+                        list_items = part.split('<br/>')
+                        for item in list_items:
+                            item = item.strip()
+                            if item and '• ' in item:
+                                paragraphs.append(Paragraph(item, list_style))
+                            elif item:
+                                paragraphs.append(Paragraph(item, style))
+                    else:
+                        # Regular paragraph
+                        paragraphs.append(Paragraph(part.strip(), style))
+        else:
+            # Single section with possible lists
+            if '• ' in text:
+                list_items = text.split('<br/>')
+                for item in list_items:
+                    item = item.strip()
+                    if item and '• ' in item:
+                        paragraphs.append(Paragraph(item, list_style))
+                    elif item:
+                        paragraphs.append(Paragraph(item, style))
+            else:
+                paragraphs.append(Paragraph(text, style))
     else:
-        paragraphs.append(Paragraph(text, style))
+        # No lists - handle normally
+        paragraphs = []
+        if '<br/><br/>' in text:
+            parts = text.split('<br/><br/>')
+            for part in parts:
+                if part.strip():
+                    paragraphs.append(Paragraph(part.strip(), style))
+        else:
+            paragraphs.append(Paragraph(text, style))
     
     return paragraphs if paragraphs else [Paragraph(text, style)]
 
