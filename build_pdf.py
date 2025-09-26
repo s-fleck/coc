@@ -783,13 +783,11 @@ def process_yaml_file(yaml_path):
                     if skill_text:
                         # Create a table with title on left and skill on right
                         # Calculate width to match the available content width
-                        # Available width = page width - left margin - right margin - icon width - right padding
-                        page_width = A4[0]
-                        left_right_margins = 30*mm  # 15mm each side from SimpleDocTemplate
-                        icon_width = 25*mm  # Icon column width (defined later in main card table)
+                        # Use fixed content width for balanced readability
+                        max_content_width = 380  # points, balanced for readability and space utilization
                         content_right_padding = 6  # Right padding only (in points)
                         
-                        available_width = page_width - left_right_margins - icon_width - content_right_padding
+                        available_width = max_content_width - content_right_padding
                         skill_paras = markdown_to_paragraphs(skill_text, skill_header_style)
                         skill_content = skill_paras[0] if skill_paras else Paragraph(f"<i>{skill_text}</i>", skill_header_style)
                         header_data = [[
@@ -845,13 +843,11 @@ def process_yaml_file(yaml_path):
                     
                     if cost_display or gain_display:
                         # Calculate available width for cost/gain table first
-                        # Available width = page width - left margin - right margin - icon width - right padding
-                        page_width = A4[0]
-                        left_right_margins = 30*mm  # 15mm each side from SimpleDocTemplate
-                        icon_width = 25*mm  # Icon column width
+                        # Use fixed content width for balanced readability
+                        max_content_width = 350  # points, balanced for readability and space utilization
                         content_right_padding = 6  # Right padding only (in points)
                         
-                        available_width = page_width - left_right_margins - icon_width - content_right_padding
+                        available_width = max_content_width - content_right_padding
                         table_data = []
                         
                         if cost_display and gain_display:
@@ -909,8 +905,10 @@ def process_yaml_file(yaml_path):
                         card_elements.append(cost_gain_table)
                     
                     # Create the main card table with icon on the left and content on the right
+                    # Limit content width to approximately 80 characters - balanced width
+                    max_content_width = 380  # points, balanced for readability and space utilization
                     card_table_data = [[main_icon, card_elements]]
-                    card_table = Table(card_table_data, colWidths=[25*mm, None])
+                    card_table = Table(card_table_data, colWidths=[25*mm, max_content_width])
                     
                     # Determine background color (alternating)
                     bg_color = colors_config['card_background_1'] if card_counter % 2 == 0 else colors_config['card_background_2']
