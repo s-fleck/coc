@@ -11,7 +11,7 @@ sheet:
         - title: "Weapon malfunction"
           icon: "img/mod_fumble.png"
           description: Avoid weapon fumble or malfunction
-          negative: 10 points
+          negative: 10 luck points
 
         - title: "Halve sanity costs"
           icon: "img/insane.png"
@@ -20,12 +20,12 @@ sheet:
 
         - title: "Avoid unconsciousness"
           icon: "img/font_awesome/face-dizzy.svg"
-          negative: 1 point, doubles each round (2, 4, 8, ...)
+          negative: 1 luck point, doubles each round (2, 4, 8, ...)
 
         - title: "Regain hit points"
           icon: "img/font_awesome/kit-medical.svg"
           description: Regain `1d6` HP
-          negative: 20 points
+          negative: 20 luck points
 
         - title: "Avoid certain death"
           icon: "img/fire-escape.png"
@@ -53,16 +53,17 @@ sheet:
 
     - type: "full_card"
       items:
-        - title: "Note"
+        - title: "Skill improvement"
           icon: "img/warning-svgrepo-com.svg"
-          description: Skill checks with *luck* adjustment do not count towards
+          description: Skill checks with luck adjustment do not count towards
             experience checks for skill improvement!
 
         - title: "Regaining Luck"
           icon: "img/luck.svg"
           description: |
             At the beginning of each session, players roll `1d100`.
-            If result is lower than character's *luck*, add `1d10+5`
-            If result is higher than character's *luck*, add `2d10+10`
+
+            - If result is lower than character's luck, add `1d10+5`
+            - If result is higher than character's luck, add `2d10+10`
 
             *Luck cannot exceed `99`*

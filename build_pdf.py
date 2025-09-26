@@ -524,7 +524,7 @@ def process_yaml_file(yaml_path):
         'PageHeader',
         parent=styles['Heading1'],
         fontSize=20,
-        spaceAfter=12,
+        spaceAfter=6,
         textColor=colors_config['page_header_text'],
         backColor=colors_config['page_header_background'],
         alignment=TA_CENTER,
@@ -630,10 +630,13 @@ def process_yaml_file(yaml_path):
                     section_items = []
                     show_title = True
             
-            # Add section header only if show_title is True
+            # Add section header or small spacing for visual separation
             if show_title and section_title:
                 elements.append(Paragraph(section_title, page_header_style))
-                elements.append(Spacer(1, 6*mm))
+                elements.append(Spacer(1, 1*mm))
+            else:
+                # Add small spacing when section header is hidden
+                elements.append(Spacer(1, 2*mm))
             
             if section_type == "mini_card":
                 # Process as mini cards in a 4-column grid - compact layout
