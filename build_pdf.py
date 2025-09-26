@@ -581,18 +581,74 @@ def process_yaml_file(yaml_path):
                     
                     mini_card_data.append(card_cells)
                     
-                    # Create table with mini cards
-                    col_width = (A4[0] - 20*mm) / 4  # Adjust for margins
-                    mini_table = Table(mini_card_data, colWidths=[col_width] * 4)
+                    # Create table with mini cards - add spacing between columns
+                    available_width = A4[0] - 20*mm  # Total available width minus margins
+                    spacing_between_cards = 2*mm      # White space between cards (matches vertical spacing)
+                    total_spacing = spacing_between_cards * 3  # 3 gaps between 4 cards
+                    card_width = (available_width - total_spacing) / 4
+                    
+                    # Add empty columns for spacing
+                    spaced_card_data = []
+                    for row in mini_card_data:
+                        spaced_row = []
+                        for i, card in enumerate(row):
+                            spaced_row.append(card)
+                            if i < len(row) - 1:  # Don't add spacing after the last card
+                                spaced_row.append("")  # Empty column for spacing
+                        spaced_card_data.append(spaced_row)
+                    
+                    # Column widths: card, space, card, space, card, space, card
+                    col_widths = []
+                    for i in range(7):  # 4 cards + 3 spacers
+                        if i % 2 == 0:  # Card columns
+                            col_widths.append(card_width)
+                        else:  # Spacing columns
+                            col_widths.append(spacing_between_cards)
+                    
+                    mini_table = Table(spaced_card_data, colWidths=col_widths)
                     mini_table.setStyle(TableStyle([
                         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
                         ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                        ('LEFTPADDING', (0, 0), (-1, -1), 8),   # Increased padding for spacing
-                        ('RIGHTPADDING', (0, 0), (-1, -1), 8),  # Increased padding for spacing
-                        ('TOPPADDING', (0, 0), (-1, -1), 8),    # Increased padding for spacing
-                        ('BOTTOMPADDING', (0, 0), (-1, -1), 8), # Increased padding for spacing
-                        # Removed GRID to eliminate borders between mini cards
-                        ('BACKGROUND', (0, 0), (-1, -1), colors_config['card_background_1'])
+                        # Card columns (even indices: 0, 2, 4, 6) get padding and background
+                        ('LEFTPADDING', (0, 0), (0, -1), 8),
+                        ('RIGHTPADDING', (0, 0), (0, -1), 8),
+                        ('TOPPADDING', (0, 0), (0, -1), 8),
+                        ('BOTTOMPADDING', (0, 0), (0, -1), 8),
+                        ('BACKGROUND', (0, 0), (0, -1), colors_config['card_background_1']),
+                        
+                        ('LEFTPADDING', (2, 0), (2, -1), 8),
+                        ('RIGHTPADDING', (2, 0), (2, -1), 8),
+                        ('TOPPADDING', (2, 0), (2, -1), 8),
+                        ('BOTTOMPADDING', (2, 0), (2, -1), 8),
+                        ('BACKGROUND', (2, 0), (2, -1), colors_config['card_background_1']),
+                        
+                        ('LEFTPADDING', (4, 0), (4, -1), 8),
+                        ('RIGHTPADDING', (4, 0), (4, -1), 8),
+                        ('TOPPADDING', (4, 0), (4, -1), 8),
+                        ('BOTTOMPADDING', (4, 0), (4, -1), 8),
+                        ('BACKGROUND', (4, 0), (4, -1), colors_config['card_background_1']),
+                        
+                        ('LEFTPADDING', (6, 0), (6, -1), 8),
+                        ('RIGHTPADDING', (6, 0), (6, -1), 8),
+                        ('TOPPADDING', (6, 0), (6, -1), 8),
+                        ('BOTTOMPADDING', (6, 0), (6, -1), 8),
+                        ('BACKGROUND', (6, 0), (6, -1), colors_config['card_background_1']),
+                        
+                        # Spacing columns (odd indices: 1, 3, 5) get no padding and no background
+                        ('LEFTPADDING', (1, 0), (1, -1), 0),
+                        ('RIGHTPADDING', (1, 0), (1, -1), 0),
+                        ('TOPPADDING', (1, 0), (1, -1), 0),
+                        ('BOTTOMPADDING', (1, 0), (1, -1), 0),
+                        
+                        ('LEFTPADDING', (3, 0), (3, -1), 0),
+                        ('RIGHTPADDING', (3, 0), (3, -1), 0),
+                        ('TOPPADDING', (3, 0), (3, -1), 0),
+                        ('BOTTOMPADDING', (3, 0), (3, -1), 0),
+                        
+                        ('LEFTPADDING', (5, 0), (5, -1), 0),
+                        ('RIGHTPADDING', (5, 0), (5, -1), 0),
+                        ('TOPPADDING', (5, 0), (5, -1), 0),
+                        ('BOTTOMPADDING', (5, 0), (5, -1), 0),
                     ]))
                     
                     # Keep each row of mini cards together
