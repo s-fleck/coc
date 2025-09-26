@@ -1,14 +1,15 @@
 sheet:
   sections:
-    - title: "Use luck to"
+    - title: "Use luck to adjust"
       type: "mini_card"
       items:
-        - title: "Adjust skill or characteristic roll"
+        - title: "Skill/characteristic roll"
           icon: "icon"
           cost: 1:1 luck points
 
-        - title: "Adjust weapon fumble/malfunction"
-          icon: "icon"
+        - title: "Weapon malfunction"
+          icon: "img/mod_fumble.png"
+          description: Avoid weapon fumble or malfunction
           cost: 10 points
 
         - title: "Halve sanity costs"
@@ -19,39 +20,41 @@ sheet:
           icon: "icon"
           cost: 1 point, doubles each round (2, 4, 8, ...)
 
-        - title: "Regain 1d6 hit points"
+        - title: "Regain hit points"
           icon: "icon"
+          description: Regain `1d6` HP
           cost: 20 points
 
         - title: "Avoid certain death"
           icon: "icon"
-          description: Regains 1d6+1 HP and returns next scene after combat
+          description: Regain `1d6+1` HP and return next scene after combat
           cost: 30 luck points
 
     - title: "Can't use luck to"
       type: "mini_card"
       items:
-        - title: "Adjust skill or characteristic roll"
+        - title: "Luck rolls"
           icon: "icon"
           cost: 1:1 luck points
 
-        - title: "Adjust weapon fumble/malfunction"
+        - title: "Damage rolls"
           icon: "icon"
           cost: 10 points
 
-        - title: "Halve sanity costs"
+        - title: "Pushed rolls"
           icon: "icon"
           cost: double full sanity cost in luck points
 
-        - title: "Avoid unconsciousness"
+        - title: "Sanity rolls"
           icon: "icon"
           cost: 1 point, doubles each round (2, 4, 8, ...)
 
-        - title: "Regain 1d6 hit points"
+        - title: "Avoid non-combat natural 100"
           icon: "icon"
           cost: 20 points
 
-        - title: "Avoid certain death"
+        - title: "Note"
           icon: "icon"
-          description: Regains 1d6+1 HP and returns next scene after combat
+          description: Skill checks with Luck adjustment do not count towards
+            experience checks for skill improvement!
           cost: 30 luck points
