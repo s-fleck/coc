@@ -550,7 +550,7 @@ def process_yaml_file(yaml_path):
         textColor=colors_config['table_cell_text']
     )
 
-    doc = SimpleDocTemplate(pdf_name, pagesize=A4, topMargin=10*mm, bottomMargin=10*mm) # leftMargin=10*mm, rightMargin=10*mm
+    doc = SimpleDocTemplate(pdf_name, pagesize=A4, topMargin=6*mm, bottomMargin=6*mm, leftMargin=15*mm, rightMargin=15*mm)
     elements = []
 
     # ---------- Build Info Cards ----------
@@ -693,7 +693,7 @@ def process_yaml_file(yaml_path):
                     mini_card_data.append(card_cells)
                     
                     # Create table with mini cards - add spacing between columns
-                    available_width = A4[0] - 20*mm  # Total available width minus margins
+                    available_width = A4[0] - 30*mm  # Total available width minus margins (15mm each side)
                     spacing_between_cards = 2*mm      # White space between cards (matches vertical spacing)
                     total_spacing = spacing_between_cards * 3  # 3 gaps between 4 cards
                     card_width = (available_width - total_spacing) / 4
@@ -783,8 +783,13 @@ def process_yaml_file(yaml_path):
                     if skill_text:
                         # Create a table with title on left and skill on right
                         # Calculate width to match the available content width
-                        # Available width = page width - margins - icon width - paddings
-                        available_width = (A4[0] - 20*mm - 20*mm - 5*mm - 8*mm)  # page - margins - icon - left/right padding
+                        # Available width = page width - left margin - right margin - icon width - right padding
+                        page_width = A4[0]
+                        left_right_margins = 30*mm  # 15mm each side from SimpleDocTemplate
+                        icon_width = 25*mm  # Icon column width (defined later in main card table)
+                        content_right_padding = 6  # Right padding only (in points)
+                        
+                        available_width = page_width - left_right_margins - icon_width - content_right_padding
                         skill_paras = markdown_to_paragraphs(skill_text, skill_header_style)
                         skill_content = skill_paras[0] if skill_paras else Paragraph(f"<i>{skill_text}</i>", skill_header_style)
                         header_data = [[
@@ -839,10 +844,18 @@ def process_yaml_file(yaml_path):
                         cost_display.append(negative_text)
                     
                     if cost_display or gain_display:
+                        # Calculate available width for cost/gain table first
+                        # Available width = page width - left margin - right margin - icon width - right padding
+                        page_width = A4[0]
+                        left_right_margins = 30*mm  # 15mm each side from SimpleDocTemplate
+                        icon_width = 25*mm  # Icon column width
+                        content_right_padding = 6  # Right padding only (in points)
+                        
+                        available_width = page_width - left_right_margins - icon_width - content_right_padding
                         table_data = []
                         
                         if cost_display and gain_display:
-                            # Both cost and gain - create combined row
+                            # Both cost and gain - create combined row with two columns
                             cost_combined = ' // '.join(cost_display)
                             gain_combined = ' // '.join(gain_display)
                             cost_paras = markdown_to_paragraphs(cost_combined, cost_gain_style)
@@ -859,8 +872,11 @@ def process_yaml_file(yaml_path):
                                 gain_content = Paragraph(f"<b>Gain:</b> {gain_text}", cost_gain_style)
                             
                             table_data.append([cost_content, gain_content])
+                            # Use two columns for both cost and gain
+                            cost_gain_table = Table(table_data, colWidths=[available_width/2, available_width/2])
+                            
                         elif cost_display:
-                            # Only cost
+                            # Only cost - use full width
                             cost_combined = ' // '.join(cost_display)
                             cost_paras = markdown_to_paragraphs(cost_combined, cost_gain_style)
                             if cost_paras:
@@ -868,9 +884,12 @@ def process_yaml_file(yaml_path):
                                 cost_content = Paragraph(f"<b>Cost:</b> {cost_text}", cost_gain_style)
                             else:
                                 cost_content = Paragraph(f"<b>Cost:</b> {cost_combined}", cost_gain_style)
-                            table_data.append([cost_content, ""])
+                            table_data.append([cost_content])
+                            # Use full width for cost only
+                            cost_gain_table = Table(table_data, colWidths=[available_width])
+                            
                         elif gain_display:
-                            # Only gain
+                            # Only gain - use full width
                             gain_combined = ' // '.join(gain_display)
                             gain_paras = markdown_to_paragraphs(gain_combined, cost_gain_style)
                             if gain_paras:
@@ -878,12 +897,9 @@ def process_yaml_file(yaml_path):
                                 gain_content = Paragraph(f"<b>Gain:</b> {gain_text}", cost_gain_style)
                             else:
                                 gain_content = Paragraph(f"<b>Gain:</b> {gain_combined}", cost_gain_style)
-                            table_data.append(["", gain_content])
-                        
-                        # Calculate available width for cost/gain table
-                        # Available width = page width - margins - icon width - paddings
-                        available_width = A4[0] - 20*mm - 25*mm - 5*mm - 8*mm  # page - margins - icon - paddings
-                        cost_gain_table = Table(table_data, colWidths=[available_width/2, available_width/2])
+                            table_data.append([gain_content])
+                            # Use full width for gain only
+                            cost_gain_table = Table(table_data, colWidths=[available_width])
                         cost_gain_table.setStyle(TableStyle([
                             ('BOTTOMPADDING', (0, 0), (-1, -1), 1),
                             ('TOPPADDING', (0, 0), (-1, -1), 2),
@@ -906,11 +922,11 @@ def process_yaml_file(yaml_path):
                         ('BACKGROUND', (0, 0), (-1, -1), bg_color),
                         # Removed GRID to eliminate vertical lines between icon and content
                         ('LEFTPADDING', (0, 0), (0, -1), 0),  # Icon column - no left padding
-                        ('RIGHTPADDING', (0, 0), (0, -1), 5), # Icon column - small right padding
-                        ('LEFTPADDING', (1, 0), (-1, -1), 5), # Content column - left padding
-                        ('RIGHTPADDING', (1, 0), (-1, -1), 8), # Content column - right padding
-                        ('TOPPADDING', (0, 0), (-1, -1), 8),
-                        ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+                        ('RIGHTPADDING', (0, 0), (0, -1), 0), # Icon column - no right padding
+                        ('LEFTPADDING', (1, 0), (-1, -1), 0), # Content column - no left padding
+                        ('RIGHTPADDING', (1, 0), (-1, -1), 6), # Content column - more right padding
+                        ('TOPPADDING', (0, 0), (-1, -1), 2),   # Minimal top padding
+                        ('BOTTOMPADDING', (0, 0), (-1, -1), 2), # Minimal bottom padding
                     ]))
                     
                     elements.append(card_table)
