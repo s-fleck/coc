@@ -1,60 +1,68 @@
 sheet:
   sections:
-    - title: "Use luck to adjust"
+    - title: "Use luck for (only Pulp Cthulhu)"
       type: "mini_card"
       items:
-        - title: "Skill/characteristic roll"
-          icon: "icon"
-          cost: 1:1 luck points
+        - title: "Skill roll"
+          icon: "img/carpenter-svgrepo-com.svg"
+          description: Adjust skill or characteristic roll
+          negative: 1:1 luck points
 
         - title: "Weapon malfunction"
           icon: "img/mod_fumble.png"
           description: Avoid weapon fumble or malfunction
-          cost: 10 points
+          negative: 10 points
 
         - title: "Halve sanity costs"
-          icon: "icon"
-          cost: double full sanity cost in luck points
+          icon: "img/insane.png"
+          description: Reduce sanity costs by 50%
+          negative: "`2×` full sanity cost in luck points"
 
         - title: "Avoid unconsciousness"
-          icon: "icon"
-          cost: 1 point, doubles each round (2, 4, 8, ...)
+          icon: "img/font_awesome/face-dizzy.svg"
+          negative: 1 point, doubles each round (2, 4, 8, ...)
 
         - title: "Regain hit points"
-          icon: "icon"
+          icon: "img/font_awesome/kit-medical.svg"
           description: Regain `1d6` HP
-          cost: 20 points
+          negative: 20 points
 
         - title: "Avoid certain death"
-          icon: "icon"
+          icon: "img/fire-escape.png"
           description: Regain `1d6+1` HP and return next scene after combat
-          cost: 30 luck points
+          negative: 30 luck points
 
-    - title: "Can't use luck to"
+    - title: "Can't use luck for"
       type: "mini_card"
       items:
         - title: "Luck rolls"
-          icon: "icon"
-          cost: 1:1 luck points
+          icon: "img/luck.svg"
 
         - title: "Damage rolls"
-          icon: "icon"
-          cost: 10 points
+          icon: "img/stab-wounds-svgrepo-com.svg"
 
         - title: "Pushed rolls"
-          icon: "icon"
-          cost: double full sanity cost in luck points
+          icon: "img/dice-fire-svgrepo-com.svg"
 
         - title: "Sanity rolls"
-          icon: "icon"
-          cost: 1 point, doubles each round (2, 4, 8, ...)
+          icon: "img/insane.png"
 
-        - title: "Avoid non-combat natural 100"
-          icon: "icon"
-          cost: 20 points
+        - title: "Avoid natural 100"
+          icon: "img/explosion-svgrepo-com.svg"
+          description: You can't use luck to avoid a non-combat natural 100 (for combat, see "Weapon malfunction")
 
+    - type: "full_card"
+      items:
         - title: "Note"
-          icon: "icon"
-          description: Skill checks with Luck adjustment do not count towards
+          icon: "img/warning-svgrepo-com.svg"
+          description: Skill checks with *luck* adjustment do not count towards
             experience checks for skill improvement!
-          cost: 30 luck points
+
+        - title: "Regaining Luck"
+          icon: "img/luck.svg"
+          description: |
+            At the beginning of each session, players roll `1d100`.
+            If result is lower than character's *luck*, add `1d10+5`
+            If result is higher than character's *luck*, add `2d10+10`
+
+            *Luck cannot exceed `99`*

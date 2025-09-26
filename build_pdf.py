@@ -16,6 +16,14 @@ from reportlab.lib.utils import ImageReader
 from PIL import Image
 import os
 
+# SVG support imports
+try:
+    from svglib.svglib import svg2rlg
+    SVG_AVAILABLE = True
+except ImportError:
+    SVG_AVAILABLE = False
+    print("Warning: svglib not available. SVG icons will not be supported.")
+
 # Register Unicode-compatible font for emoji support
 def register_unicode_fonts():
     """Register Unicode-compatible fonts that support emojis from embedded font files"""
@@ -197,14 +205,51 @@ class IconPlaceholder(Flowable):
         # Check if the icon file exists
         if self.icon_path and os.path.exists(self.icon_path):
             try:
-                # Load and draw the actual image
-                img = ImageReader(self.icon_path)
-                self.canv.drawImage(img, 0, 0, self.width, self.height, preserveAspectRatio=True, mask='auto')
+                # Check if it's an SVG file
+                if self.icon_path.lower().endswith('.svg') and SVG_AVAILABLE:
+                    self._draw_svg()
+                else:
+                    # Load and draw the actual image (PNG, JPG, etc.)
+                    img = ImageReader(self.icon_path)
+                    self.canv.drawImage(img, 0, 0, self.width, self.height, preserveAspectRatio=True, mask='auto')
             except Exception as e:
                 # Fall back to placeholder if image loading fails
                 self._draw_placeholder()
         else:
             # Draw placeholder if no image or file doesn't exist
+            self._draw_placeholder()
+    
+    def _draw_svg(self):
+        """Draw SVG icon using svglib"""
+        try:
+            # Render SVG to a ReportLab drawing
+            drawing = svg2rlg(self.icon_path)
+            
+            # Calculate scaling to fit within our bounds
+            svg_width = drawing.width
+            svg_height = drawing.height
+            
+            # Scale to fit while maintaining aspect ratio
+            scale_x = self.width / svg_width
+            scale_y = self.height / svg_height
+            scale = min(scale_x, scale_y)
+            
+            # Center the scaled SVG
+            scaled_width = svg_width * scale
+            scaled_height = svg_height * scale
+            x_offset = (self.width - scaled_width) / 2
+            y_offset = (self.height - scaled_height) / 2
+            
+            # Apply transformation and draw
+            self.canv.saveState()
+            self.canv.translate(x_offset, y_offset)
+            self.canv.scale(scale, scale)
+            drawing.drawOn(self.canv, 0, 0)
+            self.canv.restoreState()
+            
+        except Exception as e:
+            # Fall back to placeholder if SVG rendering fails
+            print(f"SVG rendering failed for {self.icon_path}: {e}")
             self._draw_placeholder()
     
     def _draw_placeholder(self):
@@ -564,22 +609,32 @@ def process_yaml_file(yaml_path):
             # 1. Direct: {title: "...", type: "...", items: [...]}
             # 2. Nested: {section_name: {title: "...", type: "...", items: [...]}}
             
-            if 'title' in section and 'items' in section:
-                # Direct structure
-                section_title = section.get('title', 'Untitled Section')
+            if 'items' in section:
+                # Direct structure (has items directly)
+                section_title = section.get('title', '')  # Empty string if no title
                 section_type = section.get('type', 'full_card')
                 section_items = section.get('items', [])
+                show_title = section.get('show_title', True)  # Default to True
             else:
                 # Nested structure - find the first key that contains the section data
                 section_key = next(iter(section.keys()))
                 section_data = section[section_key]
-                section_title = section_data.get('title', section_key.replace('_', ' ').title())
-                section_type = section_data.get('type', 'full_card')
-                section_items = section_data.get('items', [])
+                if isinstance(section_data, dict):
+                    section_title = section_data.get('title', section_key.replace('_', ' ').title())
+                    section_type = section_data.get('type', 'full_card')
+                    section_items = section_data.get('items', [])
+                    show_title = section_data.get('show_title', True)  # Default to True
+                else:
+                    # Fallback for unexpected structure
+                    section_title = section_key.replace('_', ' ').title()
+                    section_type = 'full_card'
+                    section_items = []
+                    show_title = True
             
-            # Add section header
-            elements.append(Paragraph(section_title, page_header_style))
-            elements.append(Spacer(1, 6*mm))
+            # Add section header only if show_title is True
+            if show_title and section_title:
+                elements.append(Paragraph(section_title, page_header_style))
+                elements.append(Spacer(1, 6*mm))
             
             if section_type == "mini_card":
                 # Process as mini cards in a 4-column grid - compact layout
