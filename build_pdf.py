@@ -272,8 +272,8 @@ def markdown_to_paragraphs(md_text, style):
     if not md_text:
         return []
     
-    # Convert markdown to HTML using the standard library
-    html = markdown.markdown(md_text.strip(), extensions=['nl2br'])
+    # Convert markdown to HTML using the standard library (without nl2br extension)
+    html = markdown.markdown(md_text.strip())
     
     # Convert HTML to ReportLab-compatible markup using html2text-like approach
     from html.parser import HTMLParser
@@ -323,11 +323,27 @@ def markdown_to_paragraphs(md_text, style):
             
         def get_text(self):
             text = ''.join(self.result)
-            # Clean up extra line breaks
+            # Clean up excessive line breaks more comprehensively
             import re
-            text = re.sub(r'<br/><br/><br/>', '<br/><br/>', text)  # Remove triple breaks
-            text = re.sub(r'^<br/>', '', text)  # Remove leading breaks
-            text = re.sub(r'<br/>$', '', text)  # Remove trailing breaks
+            
+            # Remove any leading line breaks
+            text = re.sub(r'^(<br/>)+', '', text)
+            
+            # Remove any trailing line breaks  
+            text = re.sub(r'(<br/>)+$', '', text)
+            
+            # Convert 4 or more consecutive line breaks to double line break (paragraph break)
+            text = re.sub(r'(<br/>){4,}', '<br/><br/>', text)
+            
+            # Convert exactly 3 consecutive line breaks to double line break  
+            text = re.sub(r'(<br/>){3}', '<br/><br/>', text)
+            
+            # Clean up space/line break combinations that create awkward spacing
+            text = re.sub(r'\s*(<br/>)+\s*', r'\1', text)
+            
+            # Ensure consistent spacing: any sequence of 2+ line breaks becomes exactly 2
+            text = re.sub(r'(<br/><br/>)+', '<br/><br/>', text)
+            
             return text.strip()
     
     parser = ReportLabHTMLParser()
@@ -594,14 +610,20 @@ def process_yaml_file(yaml_path):
                         positive_text = item.get('positive', '')
                         if positive_text:
                             positive_paras = markdown_to_paragraphs(positive_text, positive_style)
-                            card_content.append(Paragraph("✓", positive_style))
+                            if positive_paras:
+                                # Prepend checkmark to the first paragraph
+                                first_para_text = positive_paras[0].text if hasattr(positive_paras[0], 'text') else str(positive_paras[0])
+                                positive_paras[0] = Paragraph(f"✓ {first_para_text}", positive_style)
                             card_content.extend(positive_paras)
                         
                         # Add negative effect if present
                         negative_text = item.get('negative', '')
                         if negative_text:
                             negative_paras = markdown_to_paragraphs(negative_text, negative_style)
-                            card_content.append(Paragraph("✗", negative_style))
+                            if negative_paras:
+                                # Prepend X mark to the first paragraph
+                                first_para_text = negative_paras[0].text if hasattr(negative_paras[0], 'text') else str(negative_paras[0])
+                                negative_paras[0] = Paragraph(f"✗ {first_para_text}", negative_style)
                             card_content.extend(negative_paras)
                         
                         # Add gain/cost info if present
