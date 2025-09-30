@@ -8,7 +8,7 @@ sheet:
           icon: "img/firearms_fire_weapon.png"
           skill: "Firearms (Weapon)"
           description: |
-            Single shot attack with drawn firearm. Use appropriate weapon skill (Handgun, Rifle, etc...). 
+            Single shot attack with drawn firearm. Use appropriate weapon skill (`handgun`, `rifle`, ...). 
 
             **Extreme success** causes impaling strike (except flamethrowers).
           cost: 1 combat action
@@ -30,7 +30,7 @@ sheet:
           description: |
             Spend entire turn aiming. Next turn, gain +1 bonus 🎲 if firing is your first action. 
 
-            *Lost if you take damage or move before firing*.
+            *Lost if you take damage or move before firing.*
           cost: 1 turn
           gain: "+1 bonus 🎲 next round"
 
@@ -49,7 +49,7 @@ sheet:
           icon: "img/firearms_multiple_shots.png"
           skill: "Firearms (Handguns)"
           description: >
-            **Handguns/burst weapons only**. Fire up to weapon's max `Attacks` rating in single round. 
+            **Handguns/burst weapons only**. Fire up to weapon's max `attacks` rating in single round. 
             Each shot takes +1 penalty 🎲.
           cost: "1 combat action, +1 penalty 🎲 for each shot taken"
 
@@ -104,7 +104,7 @@ sheet:
 
         - title: "Target size"
           icon: "img/mod_target_size.png"
-          description: "**Small target** (`Build` ≤2) // **Large target** (`Build` ≥4)"
+          description: Target `build` `≤2` (small) or `≥4` (large)
           positive: "+1 bonus 🎲 (large target)"
           negative: "+1 penalty 🎲 (small target)"
 
@@ -120,7 +120,7 @@ sheet:
 
         - title: "Target dives"
           icon: "img/firearms_target_dive.png"
-          description: "Target dives for cover + makes successful Dodge roll"
+          description: "Target dives for cover + makes successful `dodge` roll"
           negative: "+1 penalty 🎲 on shots"
 
         - title: "In cover"

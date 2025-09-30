@@ -16,16 +16,16 @@ sheet:
           icon: "img/melee_use_weapon.png"
           skill: "Fighting (Brawl // Weapon)"
           description: |
-            Melee weapon attack (*axe, sword, spear, chainsaw...*). Use appropriate weapon's skill instead of `Fighting (Brawl)`.
+            Melee weapon attack (axe, spear, chainsaw...). Use appropriate weapon's skill instead of `fighting (brawl)`.
 
-            **Extreme success:** Max damage. In addition, edged weapons inflict impaling strike.
+            **Extreme success:** Max damage + DB. In addition, edged weapons inflict impaling strike (additional damage roll).
           cost: 1 combat action
 
         - title: "Fighting Maneuver"
           icon: "img/melee_maneuver.png"
           skill: "Fighting (Brawl)"
           description: |
-            Non-damaging action (*disarm, push, knockout...*).
+            Non-damaging action (disarm, push, knockout...).
 
             Compare builds:
 
@@ -39,10 +39,12 @@ sheet:
           icon: "img/melee_overwhelm.png"
           skill: "Fighting (Brawl // Weapon)"
           description: |
-            **Melee only.** When multiple attackers target same opponent who already used evasive actions this round,
-            all further melee attacks gain +1 bonus 🎲.
+            **Melee only.** When multiple attackers target same opponent who already used *as many evasive actions as their
+            attack per round*, all further melee attacks gain +1 bonus 🎲.
 
-            Opponent can only `dodge`/`fight back` as many times as their number of attacks per round.
+            *You can fight back/dodge as often as you are attacked*
+
+            *Mythos entities can never be outnumbered*
           cost: 1 combat action
           positive: "+1 bonus die (when conditions met)"
 
@@ -64,7 +66,7 @@ sheet:
         - title: "Impaling Strike"
           icon: "img/mod_impaling_strike.png"
           description: "Extreme success with edged weapon"
-          positive: "Full damage + DB + damage roll"
+          positive: "Max damage + DB + damage roll"
 
         - title: "Surprise Attack"
           icon: "img/mod_surprise_attack.png"

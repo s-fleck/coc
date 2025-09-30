@@ -7,7 +7,7 @@ sheet:
           icon: "img/evasion_dodge.png"
           skill: "Dodge"
           description: |
-            Against **melee** only. Opposed `Dodge` vs attacker's `Fighting`. Ties favor defender.
+            Against **melee** only. Opposed `dodge` vs attacker's `fighting`. Ties favor defender.
           cost: 1 evasive action
 
         - title: "Fight Back (Melee)"
@@ -45,7 +45,7 @@ sheet:
           description: |
             🏹 only
 
-            Player build `≤2` or `≥4`
+            Player `build` `≤2` (small) or `≥4` (large)
           positive: "+1 bonus 🎲 (small target)"
           negative: "+1 penalty 🎲 (large target)"
 

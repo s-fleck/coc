@@ -30,7 +30,7 @@ sheet:
         - title: "Perform Action"
           icon: "img/movements_perform_action.png"
           description: |
-            Use combat action for non-combat tasks (*first aid*, *lockpicking*, *climbing*, ...). Keeper may require skill roll.
+            Use combat action for non-combat tasks (`first aid`, `lockpicking`, `climbing`, ...).
           cost: 1 combat action
 
         - title: "Assist Action"
@@ -44,7 +44,8 @@ sheet:
           icon: "img/movements_hold_action.png"
           description: |
             Skip your turn and describe what you are doing. May get +1 bonus 🎲 next turn if GM approves your tactical reasoning.
-            *e.g.: hold to anticipate an attack may give you a +1 bonus 🎲 on dodge or fight back next turn
+
+            *e.g.: hold to anticipate an attack may give you a +1 bonus 🎲 on dodge or fight back next turn*
           cost: 1 turn
           gain: "+1 bonus 🎲 next turn (GM approval)"
 
