@@ -1,62 +1,116 @@
 # Call of Cthulhu PDF Cheat Sheets
 
-Generates PDF cheat sheets for Call of Cthulhu RPG from YAML files,
-but probably reusable for other purposes. Based on the visual cheat sheets by `/u/Uncle_Bones_` from this redit thread:
-https://www.reddit.com/r/callofcthulhu/comments/1aq0v34/visualised_cheat_sheets_for_combat_mechanics_i/ . All icons
-were created by `/u/Uncle_Bones_` and are used with permission.
+Generate beautiful, printable PDF cheat sheets for Call of Cthulhu RPG from YAML files. Create custom reference materials with support for icons, rich text formatting, and flexible layouts.
+
+Based on the visual cheat sheets by `/u/Uncle_Bones_` from [this Reddit thread](https://www.reddit.com/r/callofcthulhu/comments/1aq0v34/visualised_cheat_sheets_for_combat_mechanics_i/). Most icons were created by `/u/Uncle_Bones_` and are used with permission.
 
 ## 📖 Download PDFs
 
-Latest cheat sheets built from master branch are available for download at [https://s-fleck.github.io/coc/](https://s-fleck.github.io/coc/)
+**Ready-to-use cheat sheets** are available at: **[https://s-fleck.github.io/coc/](https://s-fleck.github.io/coc/)**
 
-Available cheat sheets:
+### Available Cheat Sheets
 
-- **Movement** 🚶‍♂️ - Movement actions
-- **Evasion** 🤸 - Dodge mechanics and defensive actions
-- **Firearms** 🎯 - Ranged combat actions
-- **Melee & Throw** ⚔️ - Close combat and throwing actions
-- **Pulp Luck** ⚔️ - Extra luck rules for Pulp Cthulhu
+| Sheet                | Description                                                                                                      |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 🚶‍♂️ **Movement**      | Movement actions, sprinting, taking cover                                                                        |
+| 🤸 **Evasion**       | Dodge mechanics and defensive maneuvers                                                                          |
+| 🎯 **Firearms**      | Ranged combat, aiming, and shooting rules                                                                        |
+| ⚔️ **Melee & Throw** | Close combat and throwing mechanics                                                                              |
+| 🍀 **Pulp Luck**     | Luck point rules for Pulp Cthulhu ([reference](https://www.scribd.com/document/420748823/Pulp-Luck-Cheat-Sheet)) |
 
-## Features
+## ✨ Features
 
-- **Unicode & Emoji Support**: Full support for Unicode characters and emojis 🎲
-- **Configurable Colors**: Customize all colors via `config.yml`
-- **Markdown Support**: Rich text formatting in descriptions
+- **🎨 Professional Layout**: Clean, printer-friendly design optimized for table use
+- **🔤 Unicode & Emoji Support**: Full support for special characters and emojis
+- **🎨 Customizable Colors**: Configure all colors via `config.yml`
+- **📝 Markdown Support**: Rich text formatting in descriptions
+- **🖼️ Icon Support**: PNG and SVG icons with automatic scaling
+- **📄 Flexible Sections**: Optional headers, multiple card types, smart layouts
+- **🚀 GitHub Integration**: Automatic PDF generation and deployment
 
-## Development status
+## 🚀 Quick Start
 
-This is in a proof-of-concept state and the code is 100% AI generated without much human oversight.
-That beeing said, it generates clean-looking printable cheat sheets and supports all envisioned features.
-The cheat sheets will probably be refined and extended for Cthulhu Invictus and Pulp Cthulhu over the
-course of 2025/2026 as I started this project specificaly to support a campaign that uses those rule sets.
-
-## Quick Start
-
-1. **Install dependencies**:
+1. **Clone and setup**:
 
    ```bash
+   git clone https://github.com/s-fleck/coc.git
+   cd coc
    python -m venv .venv
-   .venv\Scripts\activate  # Windows
-   pip install -r requirements.txt  # If you have one, or install manually
    ```
 
-2. **Generate PDFs**:
+2. **Activate environment and install dependencies**:
+
+   ```bash
+   # Windows
+   .venv\Scripts\activate
+
+   # Linux/Mac
+   source .venv/bin/activate
+
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
+
+3. **Generate PDFs**:
+
    ```bash
    python build_pdf.py
    ```
 
-## File Structure
+4. **View output**: Check the `output/` directory for generated PDFs
+
+## 📁 Project Structure
 
 ```
-├── .github/
-│   └── workflows/
-│       └── deploy-pdfs.yml   # GitHub Actions workflow
-├── docs/
-│   └── index.html           # GitHub Pages site
-├── output/                  # Generated PDFs (local)
-├── build_pdf.py            # Main PDF generator
-├── config.yml              # Color configuration
-├── fonts/                  # Embedded fonts directory
-│   └── README.md           # Font installation guide
-└── rules/                  # YAML cheat sheet definitions
+├── .github/workflows/       # GitHub Actions for auto-deployment
+├── docs/                   # GitHub Pages site
+├── fonts/                  # Font files (see fonts/README.md)
+├── img/                    # Icon assets
+├── output/                 # Generated PDFs (local)
+├── rules/                  # YAML cheat sheet definitions
+├── build_pdf.py           # Main PDF generator
+├── config.yml             # Color and style configuration
+└── requirements.txt        # Python dependencies
 ```
+
+## 🛠️ Creating Custom Cheat Sheets
+
+1. **Create a YAML file** in the `rules/` directory
+2. **Define your content** using the schema:
+   ```yaml
+   sheet:
+     sections:
+       - title: "Section Name"
+         type: "mini_card" # or "full_card"
+         items:
+           - title: "Action Name"
+             icon: "img/icon.png"
+             description: "Action description with **markdown**"
+             cost: "Cost or requirement"
+   ```
+3. **Run the generator**: `python build_pdf.py`
+4. **Find your PDF** in the `output/` directory
+
+For detailed documentation on the YAML schema, see the existing files in `rules/` as examples.
+
+## 🤝 Contributing
+
+**Contributions welcome!** This project is perfect for:
+
+- 📋 Adding new cheat sheets for different game systems
+- 🔧 Improving existing rules and corrections
+- 🎨 Enhancing the PDF generator functionality
+- 🐛 Bug fixes and optimizations
+
+**Note**: Assets in `/img` and `/fonts` folders have specific licenses - please respect original creators' rights.
+
+## 📝 Development Notes
+
+All the python code in this project is 100% AI generated and therefore entirely monstrous and unknowable.
+Nevertheless, it successfully produces high-quality, printable cheat sheets with all planned features.
+
+Additional cheat sheets for Cthulhu Invictus and expanded Pulp Cthulhu content planned for 2025-2026. (maybe)
+
+## 📄 License
+
+Code is open source and you may do with it whatever you wish. Icon assets and fonts belong to their original creators.
